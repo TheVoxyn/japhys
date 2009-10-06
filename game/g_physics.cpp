@@ -141,7 +141,7 @@ static void G_PhysicsEntityAddSphere ( gentity_t* ent, NewtonCollision** collisi
     
     VectorScale (size, UNITS_PER_METRE, size);
     
-    *collision = NewtonCreateSphere (bg_physicsWorld, size[0] * 0.5f, size[2] * 0.5f, size[1] * 0.5f, NULL);
+    *collision = NewtonCreateSphere (bg_physicsWorld, size[0] * 0.5f, size[2] * 0.5f, size[1] * 0.5f, ent->s.number, NULL);
 }
 
 static void G_PhysicsEntityAddCapsule ( gentity_t* ent, NewtonCollision** collision, qboolean reduce = qtrue )
@@ -156,7 +156,7 @@ static void G_PhysicsEntityAddCapsule ( gentity_t* ent, NewtonCollision** collis
     
     VectorScale (size, UNITS_PER_METRE, size);
     
-    *collision = NewtonCreateCapsule (bg_physicsWorld, size[0] / 2.0f, size[2], NULL);
+    *collision = NewtonCreateCapsule (bg_physicsWorld, size[0] / 2.0f, size[2], ent->s.number, NULL);
 }
 
 static void G_PhysicsEntityAddCuboid ( gentity_t* ent, NewtonCollision** collision, qboolean reduce = qtrue )
@@ -171,7 +171,7 @@ static void G_PhysicsEntityAddCuboid ( gentity_t* ent, NewtonCollision** collisi
     
     VectorScale (size, UNITS_PER_METRE, size);
     
-    *collision = NewtonCreateBox (bg_physicsWorld, size[0], size[1], size[2], NULL);
+    *collision = NewtonCreateBox (bg_physicsWorld, size[0], size[1], size[2], ent->s.number, NULL);
 }
 
 static void G_PhysicsEntityDie ( const NewtonBody* )

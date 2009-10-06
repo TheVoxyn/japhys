@@ -1,5 +1,5 @@
 #include "bg_physics.h"
-#include <dMatrix.h>
+#include "dMath/dMatrix.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -57,7 +57,7 @@ static qboolean LoadSurfaces ( byte* base, lump_t* surfaces, lump_t* vertices, l
     
     bg_physicsDefaultGroupId = NewtonMaterialGetDefaultGroupID (bg_physicsWorld);
     
-    collision = NewtonCreateTreeCollision (bg_physicsWorld);
+    collision = NewtonCreateTreeCollision (bg_physicsWorld, -1);
     NewtonTreeCollisionBeginBuild (collision);
     
     int lastSurface;

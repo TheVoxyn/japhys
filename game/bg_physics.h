@@ -1,8 +1,12 @@
 #ifndef BG_PHYSICS_H
 #define BG_PHYSICS_H
 
-#include <Newton.h>
-#include <dMatrix.h>
+#ifndef _NEWTON_USE_LIB
+#define _NEWTON_USE_LIB
+#endif
+
+#include "Newton.h"
+#include "dMath/dMatrix.h"
 
 #ifdef __cplusplus
 extern "C" {
