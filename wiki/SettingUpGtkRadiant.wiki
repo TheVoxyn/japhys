@@ -7,7 +7,7 @@ The new entities JAPhys introduce are:
 _(This list is subject to change due to early development of JAPhys)_
 
 =Adding the new entities=
- # Open the _mp_entities.def_ file found in !GameData/base/scripts_.
+ # Open the _mp_entities.def_ file found in _!GameData/base/scripts_.
  # Scroll to the bottom of the file, and add:
 {{{
 /*QUAKED func_physics (0 .5 .8) ?
@@ -24,4 +24,4 @@ Creates a dynamic physics object.
 */
 }}}
  # Save and close _mp_entities.def_.
- # Open GtkRadiant, and right-click in the map viewport and check that the new entities are available to use.
+ # Open !GtkRadiant, and right-click in the map viewport and check that the new entities are available to use.
