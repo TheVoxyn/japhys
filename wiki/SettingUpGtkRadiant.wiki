@@ -1,4 +1,4 @@
-#summary Guide on how to setup !GtkRadiant so that physics entities can be used.
+#summary Guide on how to setup GtkRadiant so that physics entities can be used.
 
 JAPhys introduces new entities which can be affected by players. By default, !GtkRadiant do not support these entities, so new ones must be added to its _entity definition list_.
 
