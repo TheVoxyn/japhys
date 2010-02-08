@@ -3,6 +3,27 @@
 
 #include "g_local.h"
 
+//[Physics]
+void BG_LoadBrushModelForEntity ( int entityId, int modelId );
+void BG_DestroyBodyForEntity ( int entityId );
+void BG_MoveRigidBodyTo ( int entityId, const vec3_t newPosition );
+void BG_RigidBodySetVelocity ( int entityId, const vec3_t velocity );
+void BG_OrientRigidBody ( int entityId, const vec3_t newAngles );
+
+static void LoadPhysicsBody ( const gentity_t* ent )
+{
+    if ( !ent )
+    {
+        return;
+    }
+
+	if ( ent->model[0] && ent->model[0] == '*' )
+	{
+	    BG_LoadBrushModelForEntity (ent->s.number, atoi (ent->model + 1));
+	}
+}
+//[/Physics]
+
 
 
 /*
@@ -449,6 +470,10 @@ void G_MoverTeam( gentity_t *ent ) {
 	// the move succeeded
 	for ( part = ent ; part ; part = part->teamchain ) {
 		// call the reached function if time is at or past end point
+		//[Physics]
+		BG_MoveRigidBodyTo (ent->s.number, ent->r.currentOrigin);
+		//BG_OrientRigidBody (ent->s.number, ent->r.currentAngles);
+		//[/Physics]
 		if ( part->s.pos.trType == TR_LINEAR_STOP ||
 			part->s.pos.trType == TR_NONLINEAR_STOP) {
 			if ( level.time >= part->s.pos.trTime + part->s.pos.trDuration ) {
@@ -539,10 +564,18 @@ void SetMoverState( gentity_t *ent, moverState_t moverState, int time ) {
 	case MOVER_POS1:
 		VectorCopy( ent->pos1, ent->s.pos.trBase );
 		ent->s.pos.trType = TR_STATIONARY;
+		
+		//[Physics]
+		BG_RigidBodySetVelocity (ent->s.number, vec3_origin);
+		//[/Physics]
 		break;
 	case MOVER_POS2:
 		VectorCopy( ent->pos2, ent->s.pos.trBase );
 		ent->s.pos.trType = TR_STATIONARY;
+		
+		//[Physics]
+		BG_RigidBodySetVelocity (ent->s.number, vec3_origin);
+		//[/Physics]
 		break;
 	case MOVER_1TO2:
 		VectorCopy( ent->pos1, ent->s.pos.trBase );
@@ -558,6 +591,10 @@ void SetMoverState( gentity_t *ent, moverState_t moverState, int time ) {
 			ent->s.pos.trType = TR_NONLINEAR_STOP;
 		}
 		//ent->s.eFlags &= ~EF_BLOCKED_MOVER;
+		
+		//[Physics]
+		BG_RigidBodySetVelocity (ent->s.number, ent->s.pos.trDelta);
+		//[/Physics]
 		break;
 	case MOVER_2TO1:
 		VectorCopy( ent->pos2, ent->s.pos.trBase );
@@ -573,10 +610,19 @@ void SetMoverState( gentity_t *ent, moverState_t moverState, int time ) {
 			ent->s.pos.trType = TR_NONLINEAR_STOP;
 		}
 		//ent->s.eFlags &= ~EF_BLOCKED_MOVER;
+		
+		//[Physics]
+		BG_RigidBodySetVelocity (ent->s.number, ent->s.pos.trDelta);
+		//[/Physics]
 		break;
 	}
+	
 	BG_EvaluateTrajectory( &ent->s.pos, level.time, ent->r.currentOrigin );	
 	trap_LinkEntity( ent );
+	
+	//[Physics]
+	//BG_MoveRigidBodyTo (ent->s.number, ent->r.currentOrigin/*, ent->s.pos.trType == TR_STATIONARY ? vec3_origin : ent->s.pos.trDelta*/);
+	//[/Physics]
 }
 
 /*
@@ -1335,10 +1381,6 @@ qboolean G_EntIsUnlockedDoor( int entityNum )
 	return qfalse;
 }
 
-//[Physics]
-void G_AddStaticEntity ( gentity_t *ent );
-//[/Physics]
-
 /*QUAKED func_door (0 .5 .8) ? START_OPEN FORCE_ACTIVATE CRUSHER TOGGLE LOCKED x PLAYER_USE INACTIVE
 START_OPEN	the door to moves to its destination when spawned, and operate in reverse.  It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedamage doors).
 FORCE_ACTIVATE	Can only be activated by a force push or pull
@@ -1464,7 +1506,8 @@ void SP_func_door (gentity_t *ent)
 	}
 	
 	//[Physics]
-	G_AddStaticEntity (ent);
+	LoadPhysicsBody (ent);
+	//G_AddStaticEntity (ent, ET_MOVER);
 	//[/Physics]
 }
 
@@ -1611,6 +1654,10 @@ void SP_func_plat (gentity_t *ent) {
 	if ( !ent->targetname ) {
 		SpawnPlatTrigger(ent);
 	}
+	
+	//[Physics]
+	LoadPhysicsBody (ent);
+	//[/Physics]
 }
 
 /*
@@ -1696,6 +1743,10 @@ void SP_func_button( gentity_t *ent ) {
 	}
 
 	InitMover( ent );
+	
+	//[Physics]
+	LoadPhysicsBody (ent);
+	//[/Physics]
 }
 
 
@@ -1921,6 +1972,10 @@ void SP_func_train (gentity_t *self) {
 	// a chance to spawn
 	self->nextthink = level.time + FRAMETIME;
 	self->think = Think_SetupTrainTargets;
+	
+	//[Physics]
+	LoadPhysicsBody (self);
+	//[/Physics]
 }
 
 /*
@@ -2011,6 +2066,10 @@ void SP_func_static( gentity_t *ent )
 	{	// this means that this guy will never be updated, moved, changed, etc.
 		ent->s.eFlags = EF_PERMANENT;
 	}
+	
+	//[Physics]
+	LoadPhysicsBody (ent);
+	//[/Physics]
 }
 
 void func_static_use ( gentity_t *self, gentity_t *other, gentity_t *activator )
@@ -2199,6 +2258,10 @@ void SP_func_rotating (gentity_t *ent) {
 		ent->s.speed = Distance( ent->r.absmin, ent->r.absmax )*0.5f;
 		ent->s.eFlags |= EF_RADAROBJECT;
 	}
+	
+	//[Physics]
+	LoadPhysicsBody (ent);
+	//[/Physics]
 }
 
 
@@ -2248,6 +2311,10 @@ void SP_func_bobbing (gentity_t *ent) {
 	} else {
 		ent->s.pos.trDelta[2] = height;
 	}
+	
+	//[Physics]
+	LoadPhysicsBody (ent);
+	//[/Physics]
 }
 
 /*
@@ -2303,6 +2370,10 @@ void SP_func_pendulum(gentity_t *ent) {
 	ent->s.apos.trTime = ent->s.apos.trDuration * phase;
 	ent->s.apos.trType = TR_SINE;
 	ent->s.apos.trDelta[2] = speed;
+	
+	//[Physics]
+	LoadPhysicsBody (ent);
+	//[/Physics]
 }
 
 /*
@@ -2488,6 +2559,10 @@ void funcBBrushDieGo (gentity_t *self)
 	self->think = G_FreeEntity;
 	self->nextthink = level.time + 50;
 	//G_FreeEntity( self );
+	
+	//[Physics]
+	BG_DestroyBodyForEntity (self->s.number);
+	//[/Physics]
 }
 
 void funcBBrushDie (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod)
@@ -2819,6 +2894,10 @@ void SP_func_breakable( gentity_t *self )
 		self->mass = 1.0f;
 	}
 	self->genericValue4 = 1; //so damage sys knows it's a bbrush
+	
+	//[Physics]
+	LoadPhysicsBody (self);
+	//[/Physics]
 }
 
 qboolean G_EntIsBreakable( int entityNum )
@@ -2891,6 +2970,10 @@ void GlassDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int da
 	VectorCopy(self->pos2, te->s.angles);
 	te->s.trickedentindex = (int)self->splashRadius;
 	te->s.pos.trTime = (int)self->genericValue3;
+	
+	//[Physics]
+	BG_DestroyBodyForEntity (self->s.number);
+	//[/Physics]
 
 	G_FreeEntity(self);
 }
@@ -2982,7 +3065,7 @@ void SP_func_glass( gentity_t *ent ) {
 	ent->pain = GlassPain;
 	
 	//[Physics]
-	G_AddStaticEntity (ent);
+	LoadPhysicsBody (ent);
 	//[/Physics]
 }
 
@@ -3197,6 +3280,10 @@ void SP_func_usable( gentity_t *self )
 	}
 
 	trap_LinkEntity (self);
+	
+	//[Physics]
+	LoadPhysicsBody (self);
+	//[/Physics]
 }
 
 
@@ -3273,4 +3360,7 @@ void SP_func_wall( gentity_t *ent )
 
 	trap_LinkEntity (ent);
 
+    //[Physics]
+	LoadPhysicsBody (ent);
+	//[/Physics]
 }

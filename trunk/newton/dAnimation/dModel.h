@@ -1,3 +1,14 @@
+/* Copyright (c) <2009> <Newton Game Dynamics>
+* 
+* This software is provided 'as-is', without any express or implied
+* warranty. In no event will the authors be held liable for any damages
+* arising from the use of this software.
+* 
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely
+*/
+
 
 #ifndef _D_MODEL_H_
 #define _D_MODEL_H_
@@ -56,6 +67,7 @@ class dModel
 	void UpdateMatrixPalette (const dMatrix& parentMatrix, dMatrix* const matrixOut, int maxCount) const;
 	void BindMeshToBonesByName () const;
 
+	int GetBoneCount() const;
 	dBone* FindBone (int index) const;
 	dBone* FindBone (const char* name) const;
 	dMesh* FindMesh (const char* name) const;
@@ -73,7 +85,7 @@ class dModel
 	virtual void Save (const char* name, bool exportSkeleton = true, bool exportMesh = true, bool exportAnimations = true); 
 
 	ModelComponentList<dList<dBone*> > m_skeleton;
-	ModelComponentList<dList< dMesh*> > m_meshList;
+	ModelComponentList<dList<dMesh*> > m_meshList;
 	ModelComponentList<dAnimationClip*> m_animations;
 	
 };

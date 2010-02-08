@@ -1,3 +1,14 @@
+/* Copyright (c) <2009> <Newton Game Dynamics>
+* 
+* This software is provided 'as-is', without any express or implied
+* warranty. In no event will the authors be held liable for any damages
+* arising from the use of this software.
+* 
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely
+*/
+
 
 
 // CustomSlider.cpp: implementation of the CustomSlider class.
@@ -181,4 +192,5 @@ void CustomSlider::GetInfo (NewtonJointRecord* info) const
 	memcpy (info->m_attachmenMatrix_0, &m_localMatrix0, sizeof (dMatrix));
 	memcpy (info->m_attachmenMatrix_1, &m_localMatrix1, sizeof (dMatrix));
 }
+
 

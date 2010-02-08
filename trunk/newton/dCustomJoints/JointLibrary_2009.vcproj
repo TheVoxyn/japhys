@@ -67,13 +67,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="newton.lib"
-				OutputFile="$(OutDir)\$(ProjectName).dll"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="../X32\dll_vs9"
+				OutputFile="$(OutDir)\$(ProjectName)_d.dll"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="../x32\dll_vs9"
 				GenerateDebugInformation="true"
+				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
+				ImportLibrary="$(OutDir)\$(ProjectName)_d.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -96,7 +98,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy $(OutDir)\$(ProjectName).dll &quot;..\..\samples\bin/X32\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).pdb &quot;..\..\samples\bin/X32\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;xcopy JointLibrary.h &quot;..\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).dll &quot;../X32\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).lib &quot;../X32\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;rem xcopy $(OutDir)\$(TargetName).dll &quot;C:\temp\balljointlimitsbug\*.*&quot;  /F /Y&#x0D;&#x0A;rem xcopy $(OutDir)\$(TargetName).dll &quot;C:\temp\Code_RaycastVehicleB19_22Jan09\Demo2\*.*&quot;  /F /Y&#x0D;&#x0A;rem xcopy $(OutDir)\$(ProjectName).dll &quot;C:\temp1\controllertest2\*.*&quot;  /F /Y&#x0D;&#x0A;rem xcopy $(OutDir)\$(TargetName).dll &quot;C:\temp\vehicletest3\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;"
+				CommandLine="xcopy $(OutDir)\$(ProjectName)_d.dll &quot;..\..\samples\bin/X32\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName)_d.pdb &quot;..\..\samples\bin/X32\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;xcopy JointLibrary.h &quot;..\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName)_d.dll &quot;../X32\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName)_d.lib &quot;../X32\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;rem xcopy $(OutDir)\$(TargetName)_d.dll &quot;C:\temp\balljointlimitsbug\*.*&quot;  /F /Y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -148,13 +150,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="newton.lib"
-				OutputFile="$(OutDir)\$(ProjectName).dll"
+				OutputFile="$(OutDir)\$(ProjectName)_d.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="../X64\dll_vs9"
+				AdditionalLibraryDirectories="../x64\dll_vs9"
 				GenerateDebugInformation="true"
+				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
+				ImportLibrary="$(OutDir)\$(ProjectName)_d.lib"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -177,7 +181,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy $(OutDir)\$(ProjectName).dll &quot;..\..\samples\bin/X64\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).pdb &quot;..\..\samples\bin/X64\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;xcopy JointLibrary.h &quot;..\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).dll &quot;../X64\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).lib &quot;../X64\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;xcopy $(OutDir)\$(TargetName).dll &quot;C:\temp\_vehiclelagtestbeta17\*.*&quot;  /F /Y&#x0D;&#x0A;rem xcopy $(OutDir)\$(ProjectName).dll &quot;C:\temp1\controllertest2\*.*&quot;  /F /Y&#x0D;&#x0A;rem xcopy $(OutDir)\$(TargetName).dll &quot;C:\temp\vehicletest3\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;"
+				CommandLine="xcopy $(OutDir)\$(ProjectName)_d.dll &quot;..\..\samples\bin/X64\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName)_d.pdb &quot;..\..\samples\bin/X64\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;xcopy JointLibrary.h &quot;..\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName)_d.dll &quot;../X64\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName)_d.lib &quot;../X64\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;rem xcopy $(OutDir)\$(TargetName)_d.dll &quot;C:\temp\balljointlimitsbug\*.*&quot;  /F /Y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -229,13 +233,14 @@
 				AdditionalDependencies="newton.lib"
 				OutputFile="$(OutDir)\$(ProjectName).dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="../X32\dll_vs9"
+				AdditionalLibraryDirectories="../x32\dll_vs9"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
+				ImportLibrary="$(OutDir)\$(ProjectName).lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -258,7 +263,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy $(OutDir)\$(ProjectName).dll &quot;..\..\samples\bin/x32\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).pdb &quot;..\..\samples\bin/x32\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).dll &quot;../x32\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).lib &quot;../x32\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy JointLibrary.h &quot;..\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;"
+				CommandLine="xcopy $(OutDir)\$(ProjectName).dll &quot;..\..\samples\bin/X32\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).pdb &quot;..\..\samples\bin/X32\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;xcopy JointLibrary.h &quot;..\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).dll &quot;../X32\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).lib &quot;../X32\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;rem xcopy $(OutDir)\$(TargetName).dll &quot;C:\temp\balljointlimitsbug\*.*&quot;  /F /Y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -311,13 +316,14 @@
 				AdditionalDependencies="newton.lib"
 				OutputFile="$(OutDir)\$(ProjectName).dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="../X64\dll_vs9"
+				AdditionalLibraryDirectories="../x64\dll_vs9"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
+				ImportLibrary="$(OutDir)\$(ProjectName).lib"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -340,15 +346,14 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy $(OutDir)\$(ProjectName).dll &quot;..\..\samples\bin/x64\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).pdb &quot;..\..\samples\bin/x64\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).dll &quot;../x64\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).lib &quot;../x64\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy JointLibrary.h &quot;..\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;"
+				CommandLine="xcopy $(OutDir)\$(ProjectName).dll &quot;..\..\samples\bin/X64\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).pdb &quot;..\..\samples\bin/X64\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;xcopy JointLibrary.h &quot;..\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).dll &quot;../X64\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).lib &quot;../X64\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
 			Name="debug_Double|Win32"
-			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
-			ConfigurationType="2"
-			CharacterSet="1"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -367,17 +372,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
 				AdditionalIncludeDirectories=".\;..\;..\dMath;..\customJoints"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;JOINTLIBRARY_EXPORTS;__USE_DOUBLE_PRECISION__"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
-				UsePrecompiledHeader="2"
-				PrecompiledHeaderThrough="CustomJointLibraryStdAfx.h"
-				WarningLevel="4"
-				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -390,15 +385,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="newton.lib"
-				OutputFile="$(OutDir)\$(ProjectName).dll"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="../X32\dll_vs9"
-				GenerateDebugInformation="true"
-				SubSystem="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
-				TargetMachine="1"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="../x32\dll_vs9"
+				ImportLibrary="$(OutDir)\$(ProjectName)_d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -420,7 +409,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy $(OutDir)\$(ProjectName).dll &quot;..\..\samples\bin/X32\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).pdb &quot;..\..\samples\bin/X32\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;xcopy JointLibrary.h &quot;..\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).dll &quot;../X32\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).lib &quot;../X32\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).dll &quot;C:\temp1\controllertest2\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;"
+				CommandLine="xcopy $(OutDir)\$(ProjectName).dll &quot;$(NEWTON_HOME)\samples\bin/X32\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).pdb &quot;$(NEWTON_HOME)\samples\bin/X32\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).dll &quot;$(NEWTON_HOME)\sdk\X32\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).lib &quot;$(NEWTON_HOME)\sdk\X32\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(NEWTON_HOME)\sdk\dCustomJoints\JointLibrary.h &quot;$(NEWTON_HOME)\sdk\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;rem xcopy $(OutDir)\$(TargetName).dll &quot;C:\temp\balljointlimitsbug\*.*&quot;  /F /Y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -474,11 +463,12 @@
 				AdditionalDependencies="newton.lib"
 				OutputFile="$(OutDir)\$(ProjectName).dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="../X64\dll_vs9"
+				AdditionalLibraryDirectories="$(NEWTON_HOME)\sdk\X64\dll_vs9"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
+				ImportLibrary="$(OutDir)\$(ProjectName).lib"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -501,7 +491,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy $(OutDir)\$(ProjectName).dll &quot;..\..\samples\bin\X64\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).pdb &quot;..\..\samples\bin\X64\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;xcopy JointLibrary.h &quot;..\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).dll &quot;../X64\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName).lib &quot;../X64\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;rem xcopy $(OutDir)\$(ProjectName).dll &quot;C:\temp1\controllertest2\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;"
+				CommandLine="xcopy $(OutDir)\$(ProjectName)_d.dll &quot;..\..\samples\bin/X64\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName)_d.pdb &quot;..\..\samples\bin/X64\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;xcopy JointLibrary.h &quot;..\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName)_d.dll &quot;../X64\*.*&quot;  /F /Y&#x0D;&#x0A;xcopy $(OutDir)\$(ProjectName)_d.lib &quot;../X64\*.*&quot;  /F /Y&#x0D;&#x0A;&#x0D;&#x0A;rem xcopy $(OutDir)\$(TargetName)_d.dll &quot;C:\temp\balljointlimitsbug\*.*&quot;  /F /Y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -601,14 +591,6 @@
 			</FileConfiguration>
 			<FileConfiguration
 				Name="Release|x64"
-				>
-				<Tool
-					Name="VCCLCompilerTool"
-					UsePrecompiledHeader="1"
-				/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="debug_Double|Win32"
 				>
 				<Tool
 					Name="VCCLCompilerTool"

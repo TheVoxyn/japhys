@@ -1,3 +1,14 @@
+/* Copyright (c) <2009> <Newton Game Dynamics>
+* 
+* This software is provided 'as-is', without any express or implied
+* warranty. In no event will the authors be held liable for any damages
+* arising from the use of this software.
+* 
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely
+*/
+
 
 #ifndef _D_MESH_H_
 #define _D_MESH_H_
@@ -22,14 +33,15 @@ class dSubMesh
 
 	void AllocIndexData (int indexCount);
 	int m_indexCount;
-	unsigned short *m_indexes;
+//	unsigned short *m_indexes;
+	unsigned *m_indexes;
 	unsigned m_textureHandle;
 
 	dFloat m_shiness;
 	dVector m_ambient;
 	dVector m_diffuse;
 	dVector m_specular;
-	char m_textureName[32];
+	char m_textureName[64];
 };
 
 
@@ -67,6 +79,8 @@ class dMesh: public dList<dSubMesh>, virtual public dRefCounter
 	void AllocVertexData (int vertexCount);
 	dMeshType GetType() const;
 
+	void CalculateAABB (dVector& min, dVector& max) const;
+
 	static void Load(const char* fileName, dList<dMesh*>& list, dLoaderContext& context);
 	static void Save(const char* fileName, const dList<dMesh*>& list);
 
@@ -92,3 +106,4 @@ class dMesh: public dList<dSubMesh>, virtual public dRefCounter
 
 
 #endif 
+

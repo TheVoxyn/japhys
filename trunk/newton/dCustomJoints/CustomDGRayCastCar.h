@@ -1,3 +1,14 @@
+/* Copyright (c) <2009> <Newton Game Dynamics>
+* 
+* This software is provided 'as-is', without any express or implied
+* warranty. In no event will the authors be held liable for any damages
+* arising from the use of this software.
+* 
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely
+*/
+
 // CustomDGRayCastCar.cpp: implementation of the CustomDGRayCastCar class.
 // This raycast vehicle is currently a work in progress by Dave Gravel - 2009.
 // Vehicle Raycast and convexCast Version 3.0b
@@ -41,12 +52,12 @@ public:
 		dVector m_contactNormal;           // contact normal in global space
 
 
-		dVector m_tireForceAcc;				// tire Force accumulator, doe sto suspenatin, tire toque, tire dynamics curves, and frition
+		dVector m_tireForceAcc;				// tire Force accumulator, doe sto suspenatin, tire toque, tire dynamics curves, and friction
 		dVector m_tireAxelPosit;			// position of the tire center
 		dVector m_tireAxelVeloc;			// linera velocity of tire center
-		dVector m_lateralPin;				// diretion of teh plane of rotation of eth tire 
+		dVector m_lateralPin;				// diretion of the plane of rotation of eth tire 
 		dVector m_longitudinalPin;          // diretion of motion of tire
-		dVector m_hitBodyPointVelocity;     // instant velocity of the hit point at teh Hit Body
+		dVector m_hitBodyPointVelocity;     // instant velocity of the hit point at the Hit Body
 
 		NewtonCollision* m_shape;          // collision shape of this tire 
 		void* m_userData;                  // user data pointing to the visual tire
@@ -91,7 +102,7 @@ public:
 		int m_lateralForceIndex;
 		int m_isBrakingForceIndex;
 		int m_tireIsOnAir;				  // indicate oif tire is airborne	
-		int m_tireIsConstrained;		  // indicate i fteh tire is in conyact with teh groudn and rolling in constaraine mode.	
+		int m_tireIsConstrained;		  // indicate i fteh tire is in conyact with the groudn and rolling in constaraine mode.	
 		int	m_tireUseConvexCastMode;      // default to false (can be set to true for fast LOD cars)
 	};
 
@@ -220,7 +231,7 @@ protected:
 	
 */
 
-	int m_vehicleOnAir;								// indicate if teh vehicle is fliging or not
+	int m_vehicleOnAir;								// indicate if the vehicle is fliging or not
 	int m_tiresCount;								// current number of tires
 	NormalizeForceCurve m_normalizedLateralForce;
 	NormalizeForceCurve m_normalizedLongitudinalForce;

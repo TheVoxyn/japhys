@@ -1,3 +1,14 @@
+/* Copyright (c) <2009> <Newton Game Dynamics>
+* 
+* This software is provided 'as-is', without any express or implied
+* warranty. In no event will the authors be held liable for any damages
+* arising from the use of this software.
+* 
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely
+*/
+
 
 #ifndef __dTree__
 #define __dTree__
@@ -78,6 +89,14 @@ class dTree
 		~dTreeNode () 
 		{
 		}
+
+		dTreeNode (
+			const KEY &key, 
+			dTreeNode *parentNode)
+			:dRedBackNode(parentNode), m_info (), m_key (key)
+		{
+		}
+
 	
 		dTreeNode (
 			const OBJECT &info, 
@@ -253,8 +272,9 @@ class dTree
 
 	dTreeNode *GetNodeFromInfo (OBJECT &info) const;
 
-	dTreeNode *Insert (const OBJECT &element, KEY key, bool& elementWasInTree);
+	dTreeNode *Insert (KEY key);
 	dTreeNode *Insert (const OBJECT &element, KEY key);
+	dTreeNode *Insert (const OBJECT &element, KEY key, bool& elementWasInTree);
 	dTreeNode *Insert (dTreeNode *node, KEY key);
 
 	dTreeNode *Replace (OBJECT &element, KEY key);
@@ -523,6 +543,47 @@ typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::FindLessEqual (KEY k
 	return (dTreeNode *)prev; 
 }
 
+
+template<class OBJECT, class KEY>
+typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::Insert (KEY key)
+{
+	int val;
+	dTreeNode *ptr;
+	dTreeNode *parent;
+
+	parent = NULL;
+	ptr = m_head;
+	val = 0;
+	while (ptr != NULL) {
+		parent = ptr;
+		val = CompareKeys (ptr->m_key, key);
+
+		if (val < 0) {
+			ptr = ptr->GetLeft();
+		} else if (val > 0) {
+			ptr = ptr->GetRight();
+		} else {
+			return ptr;
+		}
+	}
+
+	m_count	++;
+	ptr = new dTreeNode (key, parent);
+	if (!parent) {
+		m_head = ptr;
+	} else {
+		if (val < 0) {
+			parent->m_left = ptr; 
+		} else {
+			parent->m_right = ptr;
+		}
+	}
+	ptr->InsertFixup ((dRedBackNode**)&m_head);
+	return ptr;
+}
+
+
+
 template<class OBJECT, class KEY>
 typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::Insert (const OBJECT &element, KEY key, bool& elementWasInTree)
 {
@@ -784,4 +845,5 @@ int dTree<OBJECT, KEY>::CompareKeys (const KEY &key0, const KEY &key1) const
 
 
 #endif
+
 

@@ -1,3 +1,14 @@
+/* Copyright (c) <2009> <Newton Game Dynamics>
+* 
+* This software is provided 'as-is', without any express or implied
+* warranty. In no event will the authors be held liable for any damages
+* arising from the use of this software.
+* 
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely
+*/
+
 // dMesh.cpp: implementation of the dMesh class.
 //
 //////////////////////////////////////////////////////////////////////
@@ -9,7 +20,7 @@
 #include "dModel.h"
 #include "tinyxml.h"
 
-#define EXPORT_ASCI_FILE 
+//#define EXPORT_ASCI_FILE 
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -36,7 +47,11 @@ dSubMesh::~dSubMesh ()
 void dSubMesh::AllocIndexData (int indexCount)
 {
 	m_indexCount = indexCount;
-	m_indexes = (unsigned short *) malloc (m_indexCount * sizeof (unsigned short )); 
+	if (m_indexes) {
+		free (m_indexes);
+	}
+//	m_indexes = (unsigned short *) malloc (m_indexCount * sizeof (unsigned short )); 
+	m_indexes = (unsigned *) malloc (m_indexCount * sizeof (unsigned)); 
 }
 
 
@@ -617,7 +632,7 @@ void dMesh::Load(const char* fileName, dList<dMesh*>& list, dLoaderContext& cont
 
 				int indexCount;
 				int materialID;
-				int* indices;
+				
 				
 				dSubMesh* segment;
 				TiXmlElement* material;
@@ -641,13 +656,13 @@ void dMesh::Load(const char* fileName, dList<dMesh*>& list, dLoaderContext& cont
 				}
 
 				segment->AllocIndexData (indexCount);
-
-				indices = (int*) malloc (indexCount * sizeof (int)); 
-				dModel::StringToInts (seg->Attribute ("indices"), indices);
-				for (int i = 0; i < indexCount; i ++) {
-					segment->m_indexes[i] = short (indices[i]);
-				}
-				free (indices);
+//				int* indices = (int*) malloc (indexCount * sizeof (int)); 
+//				dModel::StringToInts (seg->Attribute ("indices"), indices);
+//				for (int i = 0; i < indexCount; i ++) {
+//					segment->m_indexes[i] = short (indices[i]);
+//				}
+//				free (indices);
+				dModel::StringToInts (seg->Attribute ("indices"), (int*)segment->m_indexes);
 			}
 
 			list.Append (mesh);
@@ -655,4 +670,20 @@ void dMesh::Load(const char* fileName, dList<dMesh*>& list, dLoaderContext& cont
 	}
 }
 
+void dMesh::CalculateAABB (dVector& minBox, dVector& maxBox) const
+{
+	minBox = dVector (1.0e10f, 1.0e10f, 1.0e10f, 0.0f);
+	maxBox = dVector (-1.0e10f, -1.0e10f, -1.0e10f, 0.0f);
+	for (int i = 0; i < m_vertexCount; i ++) {
+		minBox.m_x = (minBox.m_x < m_vertex[i * 3 + 0]) ? minBox.m_x : m_vertex[i * 3 + 0];
+		maxBox.m_x = (maxBox.m_x > m_vertex[i * 3 + 0]) ? maxBox.m_x : m_vertex[i * 3 + 0];
+																						 	
+		minBox.m_y = (minBox.m_y < m_vertex[i * 3 + 1]) ? minBox.m_y : m_vertex[i * 3 + 1];
+		maxBox.m_y = (maxBox.m_y > m_vertex[i * 3 + 1]) ? maxBox.m_y : m_vertex[i * 3 + 1];
+																						 	
+		minBox.m_z = (minBox.m_z < m_vertex[i * 3 + 2]) ? minBox.m_z : m_vertex[i * 3 + 2];
+		maxBox.m_z = (maxBox.m_z > m_vertex[i * 3 + 2]) ? maxBox.m_z : m_vertex[i * 3 + 2];
+	}
+
+}
 

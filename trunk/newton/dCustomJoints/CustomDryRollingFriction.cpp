@@ -1,3 +1,14 @@
+/* Copyright (c) <2009> <Newton Game Dynamics>
+* 
+* This software is provided 'as-is', without any express or implied
+* warranty. In no event will the authors be held liable for any damages
+* arising from the use of this software.
+* 
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely
+*/
+
 
 // CustomUpVector.cpp: implementation of the CustomUpVector class.
 //
@@ -10,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////
 
 
-CustomDryRollingFriction::CustomDryRollingFriction(NewtonBody* child, dFloat radius, dFloat coeficient)
+CustomDryRollingFriction::CustomDryRollingFriction(NewtonBody* child, dFloat radius, dFloat coefficient)
 	:NewtonCustomJoint(1, child, NULL)
 {
 	dFloat mass;
@@ -20,7 +31,7 @@ CustomDryRollingFriction::CustomDryRollingFriction(NewtonBody* child, dFloat rad
 
 	NewtonBodyGetMassMatrix (child, &mass, &Ixx, &Iyy, &Izz);
 
-	m_frictionCoef = coeficient;
+	m_frictionCoef = coefficient;
 	m_frictionTorque = Ixx * radius;
 }
 
@@ -100,4 +111,5 @@ void CustomDryRollingFriction::GetInfo (NewtonJointRecord* info) const
 	// note this is not a bug
 	memcpy (info->m_attachmenMatrix_1, &matrix[0][0], sizeof (dMatrix));
 }
+
 

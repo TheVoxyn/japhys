@@ -1,3 +1,14 @@
+/* Copyright (c) <2009> <Newton Game Dynamics>
+* 
+* This software is provided 'as-is', without any express or implied
+* warranty. In no event will the authors be held liable for any damages
+* arising from the use of this software.
+* 
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely
+*/
+
 #ifndef NEWTON_CUSTOM_JOINTS_H_INCLUDED_
 #define NEWTON_CUSTOM_JOINTS_H_INCLUDED_
 
@@ -34,6 +45,7 @@ extern "C" {
 
 	// generic joint functions
 	JOINTLIBRARY_API void CustomDestroyJoint(const NewtonUserJoint *joint);
+	JOINTLIBRARY_API NewtonJoint* CustomGetNewtonJoint (const NewtonUserJoint *joint);
 	JOINTLIBRARY_API int CustomGetJointID (const NewtonUserJoint *joint);
 	JOINTLIBRARY_API void CustomSetJointID (const NewtonUserJoint *joint, int rttI);
 	JOINTLIBRARY_API const NewtonBody* CustomGetBody0 (const NewtonUserJoint *joint);
@@ -44,6 +56,7 @@ extern "C" {
 	JOINTLIBRARY_API void CustomSetUserData (const NewtonUserJoint *joint, void* userData);
 	JOINTLIBRARY_API void CustomSetDestructorCallback (const NewtonUserJoint *joint, NewtonUserJointDestructorCallback callback);
 	JOINTLIBRARY_API void CustomSetSubmitContraintCallback (const NewtonUserJoint *joint, NewtonUserJointSubmitConstraintCallback callback);
+
 
 	// this is a plain blank joint that can be used by advanced users who want to make their own joints
 	// but that can only use languages that can only interface with C code. 
@@ -79,6 +92,9 @@ extern "C" {
 	JOINTLIBRARY_API NewtonUserJoint *CreateCustomHinge (const dFloat* pinsAndPivoChildFrame, const NewtonBody* child, const NewtonBody* parent);
 	JOINTLIBRARY_API void HingeEnableLimits(NewtonUserJoint* hingeJoint, int state);
 	JOINTLIBRARY_API void HingeSetLimis (NewtonUserJoint* hingeJoint, dFloat minAngle, dFloat maxAngle);
+	JOINTLIBRARY_API dFloat HingeGetJointAngle (const NewtonUserJoint* hingeJoint);
+	JOINTLIBRARY_API void HingeGetPinAxis (const NewtonUserJoint* hingeJoint, dFloat* pin);
+	JOINTLIBRARY_API dFloat HingeCalculateJointOmega (const NewtonUserJoint* hingeJoint);
 
 	// Interface for a custom Slider joint with Limits
 	JOINTLIBRARY_API NewtonUserJoint *CreateCustomSlider (const dFloat* pinsAndPivoChildFrame, const NewtonBody* child, const NewtonBody* parent);

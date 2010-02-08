@@ -67,7 +67,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/$(ProjectName).lib"
+				OutputFile="$(OutDir)/$(ProjectName)_d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -83,6 +83,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy $(OutDir)\$(ProjectName)_d.lib &quot;../X32\*.*&quot;  /F /Y"
 			/>
 		</Configuration>
 		<Configuration
@@ -134,7 +135,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/$(ProjectName).lib"
+				OutputFile="$(OutDir)/$(ProjectName)_d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -150,6 +151,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy $(OutDir)\$(ProjectName)_d.lib &quot;../X64\*.*&quot;  /F /Y"
 			/>
 		</Configuration>
 		<Configuration
@@ -213,6 +215,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy $(OutDir)\$(ProjectName).lib &quot;../X32\*.*&quot;  /F /Y"
 			/>
 		</Configuration>
 		<Configuration
@@ -277,15 +280,14 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy $(OutDir)\$(ProjectName).lib &quot;../X64\*.*&quot;  /F /Y"
 			/>
 		</Configuration>
 		<Configuration
 			Name="debug_Double|Win32"
-			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
-			ConfigurationType="4"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
-			CharacterSet="2"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -304,17 +306,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
 				AdditionalIncludeDirectories=".\;..\..\sdk"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;__USE_DOUBLE_PRECISION__"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
-				UsePrecompiledHeader="2"
-				PrecompiledHeaderThrough="dStdAfxMath.h"
-				WarningLevel="4"
-				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -326,11 +318,13 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/$(ProjectName).lib"
+				Name="VCLinkerTool"
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -342,7 +336,11 @@
 				Name="VCFxCopTool"
 			/>
 			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy $(OutDir)\$(ProjectName).lib &quot;../X32\*.*&quot;  /F /Y"
 			/>
 		</Configuration>
 		<Configuration
@@ -394,7 +392,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/$(ProjectName).lib"
+				OutputFile="$(OutDir)/$(ProjectName)_d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -410,6 +408,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy $(OutDir)\$(ProjectName).lib &quot;../X64\*.*&quot;  /F /Y"
 			/>
 		</Configuration>
 	</Configurations>
@@ -485,14 +484,6 @@
 			</FileConfiguration>
 			<FileConfiguration
 				Name="Release|x64"
-				>
-				<Tool
-					Name="VCCLCompilerTool"
-					UsePrecompiledHeader="1"
-				/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="debug_Double|Win32"
 				>
 				<Tool
 					Name="VCCLCompilerTool"

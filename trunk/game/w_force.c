@@ -3810,7 +3810,7 @@ void ForceThrow( gentity_t *self, qboolean pull )
 			//[Physics]
 			else if ( Q_stricmp ("func_physics", push_list[x]->classname) == 0 )
 			{
-			    float strength = 3000.0f;
+			    const float strength = 60000.0f;
 			    
 			    VectorCopy (push_list[x]->r.currentOrigin, thispush_org);
 			    VectorCopy (self->client->ps.origin, tfrom);
@@ -3824,10 +3824,10 @@ void ForceThrow( gentity_t *self, qboolean pull )
 			    
 			    dist = VectorNormalize (pushDir);
 			    
-			    strength *= 1.0f - (dist / (float)radius);
-			    VectorScale (pushDir, strength, pushDir);
+			    VectorScale (pushDir, strength * 1.0f - (dist / (float)radius), pushDir);
 			    
-			    VectorAdd (push_list[x]->pos3, pushDir, push_list[x]->pos3);
+			    VectorAdd (push_list[x]->forceApplied, pushDir, push_list[x]->forceApplied);
+			    push_list[x]->forceThrowTime = level.time;
 			    
 			    continue;
 			}

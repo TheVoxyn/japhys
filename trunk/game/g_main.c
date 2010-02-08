@@ -220,6 +220,12 @@ vmCvar_t	g_powerDuelEndHealth;
 // DUEL_HEALTH
 vmCvar_t		g_showDuelHealths;
 
+//[Physics]
+vmCvar_t        phys_fluidLinearViscosity;
+vmCvar_t        phys_fluidDensity;
+vmCvar_t        phys_fluidAngularViscosity;
+//[/Physics]
+
 // bk001129 - made static to avoid aliasing
 static cvarTable_t		gameCvarTable[] = {
 	// don't override the cheat state set by the system
@@ -463,6 +469,12 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_showDuelHealths, "g_showDuelHealths", "0", CVAR_SERVERINFO },
 	{ &g_powerDuelStartHealth, "g_powerDuelStartHealth", "150", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_powerDuelEndHealth, "g_powerDuelEndHealth", "90", CVAR_ARCHIVE, 0, qtrue  },
+	
+//[Physics]
+    { &phys_fluidLinearViscosity, "phys_fluidLinearViscosity", "0.8", CVAR_ARCHIVE, 0, qtrue },
+    { &phys_fluidAngularViscosity, "phys_fluidAngularViscosity", "0.8", CVAR_ARCHIVE, 0, qtrue },
+    { &phys_fluidDensity, "phys_fluidDensity", "4.2", CVAR_ARCHIVE, 0, qtrue },
+//[/Physics]
 };
 
 // bk001129 - made static to avoid aliasing
@@ -3586,7 +3598,7 @@ qboolean G_PointInBounds( vec3_t point, vec3_t mins, vec3_t maxs );
 int g_siegeRespawnCheck = 0;
 
 //[Physics]
-void BG_UpdatePhysics ( float timestep );
+void BG_UpdatePhysics ( int time, float timestep );
 void G_UpdateStaticBodies ( void );
 //[/Physics]
 void G_RunFrame( int levelTime ) {
@@ -3747,7 +3759,7 @@ void G_RunFrame( int levelTime ) {
 #endif
 
     //[Physics] - Update the positions of physics objects
-    BG_UpdatePhysics (1.0f / g_svfps.integer);
+    BG_UpdatePhysics (level.time, 1.0f / g_svfps.integer);
     //[/Physics]
 
 	//
