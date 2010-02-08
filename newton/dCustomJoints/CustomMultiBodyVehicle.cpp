@@ -1,3 +1,14 @@
+/* Copyright (c) <2009> <Newton Game Dynamics>
+* 
+* This software is provided 'as-is', without any express or implied
+* warranty. In no event will the authors be held liable for any damages
+* arising from the use of this software.
+* 
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely
+*/
+
 #include "CustomJointLibraryStdAfx.h"
 #include "CustomMultiBodyVehicle.h"
 
@@ -287,7 +298,7 @@ class CustomMultiBodyVehicleAxleDifferencial: public NewtonCustomJoint
 	{
 		_ASSERTE (rightTire->GetBody0() == leftTire->GetBody0());
 
-		m_maxFrition = dAbs (maxFriction);
+		m_maxfriction = dAbs (maxFriction);
 		m_chassis = rightTire->GetBody0();
 		m_leftTire = leftTire;
 		m_rightTire = rightTire;
@@ -371,12 +382,12 @@ class CustomMultiBodyVehicleAxleDifferencial: public NewtonCustomJoint
 		
 		NewtonUserJointAddGeneralRow (m_joint, jacobian0, jacobian1);
 		NewtonUserJointSetRowAcceleration (m_joint, relAccel);
-		NewtonUserJointSetRowMaximumFriction(m_joint, m_maxFrition);
-		NewtonUserJointSetRowMinimumFriction(m_joint, -m_maxFrition);
+		NewtonUserJointSetRowMaximumFriction(m_joint, m_maxfriction);
+		NewtonUserJointSetRowMinimumFriction(m_joint, -m_maxfriction);
 
 	}
 
-	dFloat m_maxFrition;
+	dFloat m_maxfriction;
 	const NewtonBody* m_chassis;
 	CustomMultiBodyVehicleTire* m_leftTire;
 	CustomMultiBodyVehicleTire* m_rightTire;
@@ -567,5 +578,6 @@ int CustomMultiBodyVehicle::AddSlipDifferencial (int leftTireIndex, int rightTir
 	m_diffencialCount ++;
 	return m_diffencialCount - 1;
 }
+
 
 

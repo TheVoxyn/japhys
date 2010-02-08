@@ -1,3 +1,14 @@
+/* Copyright (c) <2009> <Newton Game Dynamics>
+* 
+* This software is provided 'as-is', without any express or implied
+* warranty. In no event will the authors be held liable for any damages
+* arising from the use of this software.
+* 
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely
+*/
+
 
 // NewtonCustomJoint.cpp: implementation of the NewtonCustomJoint class.
 //
@@ -138,13 +149,14 @@ void  NewtonCustomJoint::SubmitConstraints (const NewtonJoint* me, dFloat timest
 	// get the pointer to the joint class
 	joint = (NewtonCustomJoint*) NewtonJointGetUserData (me);  
 
+	// call the constraint call back
+	joint->SubmitConstraints(timestep, threadIndex);
+
 	// if there is a user define callback call it form here;
 	if (joint->m_userContrationCallback) {
 		joint->m_userContrationCallback ((const NewtonUserJoint*) joint, timestep, threadIndex);
 	}
 
-	// call the constraint call back
-	joint->SubmitConstraints(timestep, threadIndex);
 }
 
 void NewtonCustomJoint::GetInfo (const NewtonJoint* me, NewtonJointRecord* info)

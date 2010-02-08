@@ -3066,6 +3066,9 @@ qboolean TryGrapple(gentity_t *ent)
 qboolean saberKnockOutOfHand(gentity_t *saberent, gentity_t *saberOwner, vec3_t velocity);
 #endif
 
+//[Physics]
+void Cmd_SpawnPhysicsEntity ( gentity_t *ent );
+//[/Physics]
 /*
 =================
 ClientCommand
@@ -3306,6 +3309,10 @@ void ClientCommand( int clientNum ) {
 		Cmd_SetViewpos_f( ent );
 	else if (Q_stricmp (cmd, "stats") == 0)
 		Cmd_Stats_f( ent );
+    //[Physics]
+    else if ( Q_stricmp (cmd, "spawnPhysicsEntity") == 0 )
+        Cmd_SpawnPhysicsEntity (ent);
+    //[/Physics]
 	/*
 	else if (Q_stricmp (cmd, "kylesmash") == 0)
 	{

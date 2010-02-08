@@ -1,3 +1,14 @@
+/* Copyright (c) <2009> <Newton Game Dynamics>
+* 
+* This software is provided 'as-is', without any express or implied
+* warranty. In no event will the authors be held liable for any damages
+* arising from the use of this software.
+* 
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely
+*/
+
 //////////////////////////////////////////////////////////////////////
 #include "CustomJointLibraryStdAfx.h"
 #include "JointLibrary.h"
@@ -19,6 +30,13 @@ void CustomDestroyJoint(const NewtonUserJoint *joint)
 {
 	delete ((NewtonCustomJoint*)joint);
 }
+
+NewtonJoint* CustomGetNewtonJoint (const NewtonUserJoint *joint)
+{
+	return  (NewtonJoint*) (((NewtonCustomJoint*)joint)->GetJoint ());
+}
+
+
 
 int CustomGetJointID (const NewtonUserJoint *joint)
 {
@@ -101,6 +119,7 @@ class CustomBlankJoint: public NewtonCustomJoint
 
 	BlankJointGetInfo m_info;
 };
+
 
 // Create a blank joint 
 NewtonUserJoint* CustomCreateBlankJoint (int maxDof, const NewtonBody* body0, const NewtonBody* body1, BlankJointGetInfo info)
@@ -191,6 +210,38 @@ public:
 		:CustomHinge (pinsAndPivoChildFrame, child, parent)
 	{
 	}
+
+	dFloat GetJointAngle () const
+	{
+		//return m_curJointAngle.m_angle;
+		return CustomHinge::GetJointAngle();
+	}
+
+	void GetPin (dFloat* pin) const
+	{
+//		dMatrix matrix;
+//		NewtonBodyGetMatrix (m_body0, &matrix[0][0]);
+//		dVector dir (matrix.RotateVector (m_localMatrix0.m_front));
+		dVector dir (CustomHinge::GetPinAxis());
+		pin[0] = dir.m_x;
+		pin[1] = dir.m_y;
+		pin[2] = dir.m_z;
+	}
+
+	dFloat CalculateJointOmega () const
+	{
+//		dMatrix matrix0;
+//		dMatrix matrix1;
+//		dVector omega0(0.0f, 0.0f, 0.0f, 0.0f);
+//		dVector omega1(0.0f, 0.0f, 0.0f, 0.0f);
+//		CalculateGlobalMatrix (m_localMatrix0, m_localMatrix1, matrix0, matrix1);
+//		NewtonBodyGetOmega(m_body0, &omega0[0]);
+//		if (m_body1) {
+//			NewtonBodyGetOmega(m_body1, &omega1[0]);
+//		}
+//		return (omega0 - omega1) % matrix0.m_front;;
+		return CustomHinge::GetJointOmega ();
+	}
 };
 
 // Generic Hinge Joint spin along the first axis on pinsAndPivoChildFrame
@@ -207,6 +258,21 @@ void HingeEnableLimits(NewtonUserJoint* hingeJoint, int state)
 void HingeSetLimis (NewtonUserJoint* hingeJoint, dFloat minAngle, dFloat maxAngle)
 {
 	((CustomUserHinge*)hingeJoint)->SetLimis (minAngle, maxAngle); 
+}
+
+dFloat HingeGetJointAngle (const NewtonUserJoint* hingeJoint)
+{
+	return ((CustomUserHinge*)hingeJoint)->GetJointAngle();
+}
+
+void HingeGetPinAxis (const NewtonUserJoint* hingeJoint, dFloat* pin) 
+{
+	return ((CustomUserHinge*)hingeJoint)->GetPin (pin);
+}
+
+dFloat HingeCalculateJointOmega (const NewtonUserJoint* hingeJoint)
+{
+	return ((CustomUserHinge*)hingeJoint)->CalculateJointOmega();
 }
 
 
@@ -667,5 +733,6 @@ void DGRaycastVehicleDestroy (NewtonUserJoint *car)
 
 
 */
+
 
 

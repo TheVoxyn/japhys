@@ -2255,9 +2255,6 @@ to the server machine, but qfalse on map changes and tournement
 restarts.
 ============
 */
-//[Physics]
-void G_AddStaticEntity ( gentity_t* ent );
-//[/Physics]
 char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	char		*value;
 //	char		*areabits;
@@ -2396,9 +2393,6 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	gentity_t	*tent;
 	int			flags, i;
 	char		userinfo[MAX_INFO_VALUE], *modelname;
-	//[Physics]
-	clientConnected_t oldConnectState;
-	//[/Physics]
 
 	ent = g_entities + clientNum;
 
@@ -2455,10 +2449,6 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 
 	//assign the pointer for bg entity access
 	ent->playerState = &ent->client->ps;
-	
-	//[Physics]
-	oldConnectState = client->pers.connected;
-	//[/Physics]
 
 	client->pers.connected = CON_CONNECTED;
 	client->pers.enterTime = level.time;
@@ -2582,6 +2572,10 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 		ClientSpawn( ent );
 	}
 
+    //[Physics]
+	G_RemoveStaticEntity (ent);
+	//[/Physics]
+
 	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
 		// send event
 		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN );
@@ -2592,11 +2586,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 		}
 		
 		//[Physics]
-	    if ( oldConnectState == CON_CONNECTING )
-	    {
-            ent->s.eType = ET_PLAYER; // put this here so our function recognises its a player!
-            G_AddStaticEntity (ent);
-        }
+        G_AddStaticEntity (ent, ET_PLAYER);
         //[/Physics]
 	}
 	G_LogPrintf( "ClientBegin: %i\n", clientNum );
@@ -3828,9 +3818,6 @@ call trap_DropClient(), which will call this and do
 server system housekeeping.
 ============
 */
-//[Physics]
-void G_RemoveStaticEntity ( gentity_t* ent );
-//[/Physics]
 void ClientDisconnect( int clientNum ) {
 	gentity_t	*ent;
 	gentity_t	*tent;

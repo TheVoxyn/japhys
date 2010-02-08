@@ -1,3 +1,14 @@
+/* Copyright (c) <2009> <Newton Game Dynamics>
+* 
+* This software is provided 'as-is', without any express or implied
+* warranty. In no event will the authors be held liable for any damages
+* arising from the use of this software.
+* 
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely
+*/
+
 
 // CustomPulley.h: interface for the CustomPulley class.
 //
@@ -14,7 +25,7 @@
 // velErro = -(v0 + n * v1)
 // where v0 and v1 are the linear velocity
 // n is the number of turn on the pulley, in the case of this joint N coudl
-// be a velue with fraction, as this joint is a generalization of teh pulley idea.
+// be a velue with fraction, as this joint is a generalization of the pulley idea.
 class JOINTLIBRARY_API CustomPulley: public NewtonCustomJoint  
 {
 	public:
@@ -35,3 +46,4 @@ class JOINTLIBRARY_API CustomPulley: public NewtonCustomJoint
 };
 
 #endif 
+

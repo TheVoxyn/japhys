@@ -1,3 +1,14 @@
+/* Copyright (c) <2009> <Newton Game Dynamics>
+* 
+* This software is provided 'as-is', without any express or implied
+* warranty. In no event will the authors be held liable for any damages
+* arising from the use of this software.
+* 
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely
+*/
+
 #include "CustomJointLibraryStdAfx.h"
 #include "CustomPlayerController.h"
 
@@ -5,6 +16,9 @@
 #define MAX_CONTACTS					16
 #define SENSOR_SHAPE_SEGMENTS			32
 #define MAX_COLLISIONS_ITERATION		8
+
+
+#define DEAD_RESIDUAL_HORIZONTAL_VELOC	0.1f		
 
 CustomPlayerController::CustomPlayerController(
 	const dMatrix& playerFrameInGlobalSpace,
@@ -165,12 +179,24 @@ void CustomPlayerController::SetVelocity (dFloat forwardSpeed, dFloat sideSpeed,
 	m_forwardSpeed = forwardSpeed;
 }
 
+void CustomPlayerController::GetVelocity (dFloat& forwardSpeed, dFloat& sideSpeed, dFloat& heading) const
+{
+	heading = m_heading;
+	sideSpeed = m_sideSpeed;
+	forwardSpeed = m_forwardSpeed;
+}
+
 
 const NewtonCollision* CustomPlayerController::GetSensorShape () const
 {
-//	return m_bodySensorShape;
+	return m_bodySensorShape;
+}
+
+const NewtonCollision* CustomPlayerController::GetStairStepShape () const
+{
 	return m_stairSensorShape;
 }
+
 
 
 void CustomPlayerController::SetMaxSlope (dFloat maxSlopeAngleIndRadian)
@@ -194,6 +220,15 @@ dFloat CustomPlayerController::GetMaxSlope () const
 	return dCos (m_maxSlope);
 }
 
+dFloat CustomPlayerController::GetPlayerHeight() const
+{
+	return  m_playerHeight;
+}
+
+dFloat CustomPlayerController::GetPlayerStairHeight() const
+{
+	return m_stairHeight;
+}
 
 /*
 void CustomPlayerController::GetInfo (NewtonJointRecord* info) const
@@ -391,43 +426,35 @@ void CustomPlayerController::SubmitConstraints (dFloat timestep, int threadIndex
 }
 
 
-void CustomPlayerController::KinematicMotion (dFloat timestep, int threadIndex)
+int CustomPlayerController::PreProcessContacts (NewtonWorldConvexCastReturnInfo* const contacts, int count, const dVector& upDir) const
 {
-	dFloat turnOmega;
-	dFloat turnAngle;
-	dMatrix bodyMatrix;
-
-	// handle angular velocity and heading
-	NewtonBodyGetMatrix(m_body0, &bodyMatrix[0][0]);
-
-	dVector upDir (bodyMatrix.RotateVector (m_localMatrix0.m_front));
-	dVector frontDir (bodyMatrix.RotateVector (m_localMatrix0.m_up));
-
-	dVector heading (0.0f, dCos (m_heading), dSin (m_heading), 0.0f);
-	heading = m_localMatrix0.RotateVector(heading);
-	turnAngle = (frontDir * heading) % upDir;
-	turnAngle = dAsin (min (max (turnAngle, -1.0f), 1.0f)); 
-	turnOmega = turnAngle / timestep;
-
-	dVector omega (upDir.Scale (turnOmega));
-	NewtonBodySetOmega(m_body0, &omega.m_x);
-
-	switch (m_playerState) 
-	{
-		case m_onFreeFall:
-			PlayerOnFreeFall (timestep, threadIndex);
-			break;
-	
-		case m_onLand:
-			PlayerOnLand (timestep, threadIndex);
-			break;
-
-		case m_onIlligalRamp:
-			PlayerOnRamp (timestep, threadIndex);
-			break;
+	// flatten contact prune contacts
+	for (int i = 0; i < count; i ++) {
+		dVector normal (contacts[i].m_normal);
+//		dVector point (contacts[i].m_point);
+		normal -= upDir.Scale (upDir % normal);
+		normal = normal.Scale (1.0f / dSqrt (normal % normal));
+		contacts[i].m_normal[0] = normal.m_x;
+		contacts[i].m_normal[1] = normal.m_y;
+		contacts[i].m_normal[2] = normal.m_z;
+//		contacts[i].m_normal[3] = - (normal % point);
 	}
-}
 
+	// prune contact with the same normal
+	for (int i = 0; i < (count - 1); i ++) {
+		const dVector& normal0 = *((dVector*) (&contacts[i].m_normal[0])); 
+		for (int j = i + 1; j < count; j ++) {
+			const dVector& normal1 = *((dVector*) (&contacts[j].m_normal[0])); 
+			dFloat val = normal0 % normal1;
+			if (val > 0.9995f) {
+				count --;
+				contacts[j] = contacts[count];
+				j --;
+			}
+		}
+	}
+	return count;
+}
 
 dVector CustomPlayerController::CalculateVelocity (
 	const dVector& veloc, 
@@ -436,64 +463,182 @@ dVector CustomPlayerController::CalculateVelocity (
 	dFloat elevation,
 	int threadIndex) const
 {
-	int contactCount;
-	dFloat hitParam;
-	dFloat timestepInv;
-	dMatrix bodyMatrix;
-	CastFilterData castFilterData (m_body0);
-	NewtonWorldConvexCastReturnInfo info[MAX_CONTACTS];
-
-	dVector velocity (veloc);
-	NewtonBodyGetMatrix(m_body0, &bodyMatrix[0][0]);
-
-	castFilterData.m_count = 1;
-	bodyMatrix.m_posit += upDir.Scale (elevation);
-	dVector destination (bodyMatrix.m_posit + velocity.Scale (timestep));
-
-	timestepInv = 1.0f / timestep;
-
 	// see if it hit and obstacle
-	contactCount = NewtonWorldConvexCast (m_world, &bodyMatrix[0][0], &destination[0], m_bodySensorShape, &hitParam, &castFilterData, ConvexStaticCastPrefilter, info, sizeof (info) / sizeof (info[0]), threadIndex);
-	for (int iterations = 0; contactCount && (iterations < MAX_COLLISIONS_ITERATION); iterations ++) {
-		int flag;
-		dFloat time;
+	
+	dFloat mag2;
 
-		// if the player will hit an obstacle in this direction then we need to change the velocity direction
-		// we will declare a collision at the player origin.
-		dVector step (destination - bodyMatrix.m_posit);
-		dVector posit (bodyMatrix.m_posit + step.Scale(hitParam));
+	dVector verticalVeloc (upDir.Scale (veloc % upDir)) ;
+	dVector velocity (veloc - verticalVeloc);
+	mag2 = velocity % velocity;
 
-		// calculate the travel time, and subtract from time remaining
-		time = hitParam * (step % velocity) / (velocity % velocity);
-		flag = 0;
-		for (int i = 0; i < contactCount; i ++) {
-			dFloat reboundVeloc;
-			dFloat penetrationVeloc;
-			//			const NewtonBody* body;
-			// flatten contact normal
-			dVector normal (info[i].m_normal);
-			normal -= upDir.Scale (upDir % normal);
-			normal = normal.Scale (1.0f / dSqrt (normal % normal));
+/*
+static int xxx1;
+xxx1 ++;
+if (xxx1 >= 170){
+xxx1 *=1;
+dMatrix bodyMatrix;
 
-			// calculate the reflexion velocity
-			penetrationVeloc = -0.5f * timestepInv * ((info[i].m_penetration > 0.1f) ? 0.1f : info[i].m_penetration);
-			reboundVeloc = (velocity % normal) * (1.0f + m_restitution) + penetrationVeloc;
-			if (reboundVeloc < 0.0f) {
-				flag = 1;
-				velocity -= normal.Scale(reboundVeloc);
+//NewtonBodyGetVelocity(m_body0, &veloc[0]);
+NewtonBodyGetMatrix(m_body0, &bodyMatrix[0][0]);
+static dVector xxxx(bodyMatrix.m_posit);
+dVector x (bodyMatrix.m_posit - xxxx);
+//dTrace (("%d %f %f %f\n", xxx, bodyMatrix.m_posit.m_x, bodyMatrix.m_posit.m_y, bodyMatrix.m_posit.m_z));
+dTrace (("step(%d %f %f %f)  v(%f %f)\n", xxx1, x.m_x, x.m_y, x.m_z, veloc.m_x, veloc.m_z));
+xxxx = bodyMatrix.m_posit;
+}
+*/
+
+	if (mag2 > 0.0f) {
+		int contactCount;
+		int prevContactCount;
+		int positionHasChanged;
+		dFloat hitParam;
+		dFloat paddingTimestep;
+		dMatrix bodyMatrix;
+		CastFilterData castFilterData (m_body0);
+		NewtonWorldConvexCastReturnInfo info[MAX_CONTACTS];
+		NewtonWorldConvexCastReturnInfo prevInfo[MAX_CONTACTS];
+
+
+		NewtonBodyGetMatrix(m_body0, &bodyMatrix[0][0]);
+		castFilterData.m_count = 1;
+		bodyMatrix.m_posit += upDir.Scale (elevation);
+
+		dVector translationStep (velocity.Scale (timestep));
+		dVector paddingStep (velocity.Scale (m_kinematicCushion / dSqrt (mag2)));
+		dVector destination (bodyMatrix.m_posit + translationStep + paddingStep);
+
+		paddingTimestep = (paddingStep % velocity) / (velocity % velocity);
+
+		prevContactCount = 0;
+		positionHasChanged = 0;
+		contactCount = NewtonWorldConvexCast (m_world, &bodyMatrix[0][0], &destination[0], m_bodySensorShape, &hitParam, &castFilterData, ConvexStaticCastPrefilter, info, sizeof (info) / sizeof (info[0]), threadIndex);
+		contactCount = PreProcessContacts (info, contactCount, upDir);
+		for (int iterations = 0; contactCount && (iterations < MAX_COLLISIONS_ITERATION); iterations ++) {
+			int flag;
+			int count;
+			dFloat time;
+
+			// calculate the travel time, and subtract from time remaining
+			time = hitParam * ((translationStep + paddingStep) % velocity) / (velocity % velocity) - paddingTimestep;
+
+			// teleport the body to the intersection point
+			positionHasChanged = 1;
+			bodyMatrix.m_posit += velocity.Scale (time);
+
+			dFloat speed[MAX_CONTACTS * 2];
+			dFloat bounceSpeed[MAX_CONTACTS * 2];
+			dVector bounceNormal[MAX_CONTACTS * 2];
+			dVector auxBounceVeloc (0.0f, 0.0f, 0.0f, 0.0f);
+
+			count = 0;
+			for (int i = 0; i < contactCount; i ++) {
+				dFloat reboundVeloc;						
+
+				speed[count] = 0.0f;
+				
+				bounceNormal[count] = info[i].m_normal;
+				reboundVeloc = -(velocity % bounceNormal[count]) * (1.0f + m_restitution);
+				bounceSpeed[count] = (reboundVeloc > 0.0f) ? reboundVeloc : 0.0f; 
+				count ++;
+			}
+
+			for (int i = 0; i < prevContactCount; i ++) {
+				dFloat reboundVeloc;						
+
+				speed[count] = 0.0f;
+				bounceNormal[count] = prevInfo[i].m_normal;
+				reboundVeloc = (velocity % bounceNormal[count]) * (1.0f + m_restitution);
+				bounceSpeed[count] = (reboundVeloc > 0.0f) ? reboundVeloc : 0.0f; 
+				count ++;
+			}
+
+			dFloat residual;
+			residual = 10.0f;
+			for (int i = 0; (i < 16) && (residual > 1.0e-3f); i ++) {
+				residual = 0.0f;
+				for (int k = 0; k < count; k ++) {
+					dFloat v;
+					dFloat x;
+
+					v = bounceSpeed[k] - bounceNormal[k] % auxBounceVeloc;
+					x = speed[k] + v;
+
+					if (x < 0.0f) {
+						v = 0.0f;
+						x = 0.0f;
+					}
+
+					if (dAbs (v) > residual) {
+						residual = dAbs (v);
+					}
+
+					auxBounceVeloc += bounceNormal[k].Scale (x - speed[k]);
+					speed[k] = x;
+				}
+			}
+
+			flag = 0;
+			for (int i = 0; i < count; i ++) {
+				flag = (speed[i] > 0.0f);
+				velocity += bounceNormal[i].Scale (speed[i]);
+			}
+
+			prevContactCount = contactCount;
+			contactCount = 0;			
+			if (flag) {
+				memcpy (prevInfo, info, prevContactCount * sizeof (NewtonWorldConvexCastReturnInfo));
+				mag2 = velocity % velocity;
+				if (mag2 > 1.0e-6f) {
+					translationStep = velocity.Scale (timestep);
+					paddingStep = velocity.Scale (m_kinematicCushion / dSqrt (mag2));
+					dVector destination (bodyMatrix.m_posit + translationStep + paddingStep);
+					castFilterData.m_count = 1;
+
+					contactCount = NewtonWorldConvexCast (m_world, &bodyMatrix[0][0], &destination[0], m_bodySensorShape, &hitParam, &castFilterData, ConvexStaticCastPrefilter, info, sizeof (info) / sizeof (info[0]), threadIndex);
+					contactCount = PreProcessContacts (info, contactCount, upDir);
+				}
 			}
 		}
 
-		contactCount = 0;
-		if ((time > (1.0e-2f * timestep)) && flag) {
-			dVector destination (bodyMatrix.m_posit + velocity.Scale (timestep));
-			castFilterData.m_count = 1;
-			contactCount = NewtonWorldConvexCast (m_world, &bodyMatrix[0][0], &destination[0], m_bodySensorShape, &hitParam, &castFilterData, ConvexStaticCastPrefilter, info, sizeof (info) / sizeof (info[0]), threadIndex);
+		if (positionHasChanged) {
+			bodyMatrix.m_posit -= upDir.Scale (elevation);
+			NewtonBodySetMatrix (m_body0, &bodyMatrix[0][0]);
+		}
+		// prevent the body form drifting form residual velocity when it is in a corner
+		mag2 = velocity % velocity;
+		if (mag2 < (DEAD_RESIDUAL_HORIZONTAL_VELOC * DEAD_RESIDUAL_HORIZONTAL_VELOC)) {
+			velocity = dVector (0.0f, 0.0f, 0.0f, 0.0f) ;
 		}
 	}
 
-	return velocity;
+	return (velocity + verticalVeloc);
 }
+
+int CustomPlayerController::FindFloor (const dMatrix& origin, const dVector& dest, const dVector upDir, NewtonCollision* shape, dFloat& hitParam, dVector& normal, int threadIndex) const
+{
+	int contacts;
+	CastFilterData castFilterData (m_body0);
+	NewtonWorldConvexCastReturnInfo info[MAX_CONTACTS];
+
+	contacts = NewtonWorldConvexCast (m_world, &origin[0][0], &dest[0], shape, &hitParam, &castFilterData, ConvexAllBodyCastPrefilter, info, 8, threadIndex);
+	if (contacts) {
+		int bestContact = 0;
+		dFloat bestValue = upDir % info[0].m_normalOnHitPoint;
+		for (int i = 1; i < contacts; i ++) {
+			dFloat value = upDir % info[i].m_normalOnHitPoint;
+			if (value > bestValue) {
+				bestContact = i;
+				bestValue = value;
+
+			}
+		}
+		normal = info[bestContact].m_normalOnHitPoint;
+		contacts = 1;
+	}
+	return contacts;
+}
+
 
 void CustomPlayerController::PlayerOnFreeFall (dFloat timestep, int threadIndex)
 {
@@ -501,8 +646,6 @@ void CustomPlayerController::PlayerOnFreeFall (dFloat timestep, int threadIndex)
 	dFloat hitParam;
 	dVector velocity;
 	dMatrix bodyMatrix;
-	CastFilterData castFilterData (m_body0);
-	NewtonWorldConvexCastReturnInfo info[MAX_CONTACTS];
 
 	// Get the global matrices of each rigid body.
 	NewtonBodyGetMatrix(m_body0, &bodyMatrix[0][0]);
@@ -510,9 +653,6 @@ void CustomPlayerController::PlayerOnFreeFall (dFloat timestep, int threadIndex)
 
 	dVector upDir (bodyMatrix.RotateVector (m_localMatrix0.m_front));
 	dVector frontDir (bodyMatrix.RotateVector (m_localMatrix0.m_up));
-
-	// enlarge the time step to no overshot too much
-//	timestepInv = 1.0f / timestep;
 
 	// make sure the body velocity will no penetrates other bodies
 	NewtonBodyGetVelocity (m_body0, &velocity[0]);
@@ -523,13 +663,13 @@ void CustomPlayerController::PlayerOnFreeFall (dFloat timestep, int threadIndex)
 	dist = upDir % velocity.Scale (timestep);
 
 	bodyMatrix.m_posit -= upDir.Scale (m_kinematicCushion);
+	dVector floorNormal;
 	dVector target (bodyMatrix.m_posit + upDir.Scale (dist));
-	if (NewtonWorldConvexCast (m_world, &bodyMatrix[0][0], &target[0], m_bodyFloorSensorShape, &hitParam, &castFilterData, ConvexStaticCastPrefilter, info, 1, threadIndex)) {
+	if (FindFloor (bodyMatrix, target, upDir, m_bodyFloorSensorShape, hitParam, floorNormal, threadIndex)) {
 		// player is about to land, snap position to the ground
 		bodyMatrix.m_posit = posit + upDir.Scale (dist * hitParam);
 		NewtonBodySetMatrix (m_body0, &bodyMatrix[0][0]);
 
-		dVector	floorNormal (info[0].m_normalOnHitPoint[0], info[0].m_normalOnHitPoint[1], info[0].m_normalOnHitPoint[2], 0.0f);
 		if ((floorNormal % upDir) < m_maxSlope) {
 			m_playerState = m_onIlligalRamp;
 		} else {
@@ -542,18 +682,13 @@ void CustomPlayerController::PlayerOnFreeFall (dFloat timestep, int threadIndex)
 
 
 
-
-
-
 void CustomPlayerController::PlayerOnRamp (dFloat timestep, int threadIndex)
 {
 	dFloat hitParam;
 	dVector velocity;
 	dMatrix bodyMatrix;
-	CastFilterData castFilterData (m_body0);
-	NewtonWorldConvexCastReturnInfo info[MAX_CONTACTS];
-
-
+//	CastFilterData castFilterData (m_body0);
+//	NewtonWorldConvexCastReturnInfo info[MAX_CONTACTS];
 
 	// Get the global matrices of each rigid body.
 	NewtonBodyGetMatrix(m_body0, &bodyMatrix[0][0]);
@@ -566,15 +701,20 @@ void CustomPlayerController::PlayerOnRamp (dFloat timestep, int threadIndex)
 	NewtonBodyGetVelocity (m_body0, &velocity[0]);
 
 	
-// apply free fall gravity force to the body along the ramp
-	castFilterData.m_count = 1;
+//	apply free fall gravity force to the body along the ramp
+//	castFilterData.m_count = 1;
 	bodyMatrix.m_posit = posit + upDir.Scale (m_stairHeight);
 	dVector target (bodyMatrix.m_posit - upDir.Scale(m_stairHeight * 2.0f));
-	if (NewtonWorldConvexCast (m_world, &bodyMatrix[0][0], &target[0], m_bodyFloorSensorShape, &hitParam, &castFilterData, ConvexStaticCastPrefilter, info, sizeof (info) / sizeof (info[0]), threadIndex)) {
-		velocity -= m_gravity.Scale (timestep);
-		dVector	floorNormal (info[0].m_normalOnHitPoint[0], info[0].m_normalOnHitPoint[1], info[0].m_normalOnHitPoint[2], 0.0f);
-		dVector	gravityForce (m_gravity - floorNormal.Scale (floorNormal % m_gravity));
-		velocity = velocity - floorNormal.Scale (floorNormal % velocity) + gravityForce.Scale (timestep);
+	dVector floorNormal;
+//	if (NewtonWorldConvexCast (m_world, &bodyMatrix[0][0], &target[0], m_bodyFloorSensorShape, &hitParam, &castFilterData, ConvexStaticCastPrefilter, info, sizeof (info) / sizeof (info[0]), threadIndex)) {
+	if (FindFloor (bodyMatrix, target, upDir, m_bodyFloorSensorShape, hitParam, floorNormal, threadIndex)) {
+//		velocity -= m_gravity.Scale (timestep);
+		velocity += m_gravity.Scale (timestep);
+
+//		dVector	floorNormal (info[0].m_normalOnHitPoint[0], info[0].m_normalOnHitPoint[1], info[0].m_normalOnHitPoint[2], 0.0f);
+//		dVector	gravityForce (m_gravity - floorNormal.Scale (floorNormal % m_gravity));
+//		velocity = velocity - floorNormal.Scale (floorNormal % velocity) + gravityForce.Scale (timestep);
+		velocity = velocity - floorNormal.Scale (floorNormal % velocity);
 	}
 
 	velocity = CalculateVelocity (velocity, timestep, upDir, m_stairHeight, threadIndex);
@@ -584,15 +724,17 @@ void CustomPlayerController::PlayerOnRamp (dFloat timestep, int threadIndex)
 	bodyMatrix.m_posit = posit + step + upDir.Scale (m_stairHeight - m_kinematicCushion);
 	target = bodyMatrix.m_posit - upDir.Scale(m_stairHeight * 2.0f);
 
-	castFilterData.m_count = 1;
-	if (NewtonWorldConvexCast (m_world, &bodyMatrix[0][0], &target[0], m_bodyFloorSensorShape, &hitParam, &castFilterData, ConvexAllBodyCastPrefilter, info, 1, threadIndex)) {
+//	castFilterData.m_count = 1;
+//	if (NewtonWorldConvexCast (m_world, &bodyMatrix[0][0], &target[0], m_bodyFloorSensorShape, &hitParam, &castFilterData, ConvexAllBodyCastPrefilter, info, 1, threadIndex)) {
+	if (FindFloor (bodyMatrix, target, upDir, m_bodyFloorSensorShape, hitParam, floorNormal, threadIndex)) {
 		if (hitParam > 1.0e-3f) {
+
 			int isFuturePosiInRamp;
 
 			bodyMatrix.m_posit = bodyMatrix.m_posit + (target - bodyMatrix.m_posit).Scale (hitParam) - step + upDir.Scale (m_kinematicCushion);
 			NewtonBodySetMatrix (m_body0, &bodyMatrix[0][0]);
 
-			dVector	floorNormal (info[0].m_normalOnHitPoint[0], info[0].m_normalOnHitPoint[1], info[0].m_normalOnHitPoint[2], 0.0f);
+//			dVector	floorNormal (info[0].m_normalOnHitPoint[0], info[0].m_normalOnHitPoint[1], info[0].m_normalOnHitPoint[2], 0.0f);
 
 			isFuturePosiInRamp = (floorNormal % upDir) < m_maxSlope;
 			if (!isFuturePosiInRamp) {
@@ -621,14 +763,12 @@ void CustomPlayerController::PlayerOnRamp (dFloat timestep, int threadIndex)
 }
 
 
+
 void CustomPlayerController::PlayerOnLand (dFloat timestep, int threadIndex)
 {
 	dFloat hitParam;
 	dVector velocity;
 	dMatrix bodyMatrix;
-	CastFilterData castFilterData (m_body0);
-	NewtonWorldConvexCastReturnInfo info[MAX_CONTACTS];
-
 
 	// Get the global matrices of each rigid body.
 	NewtonBodyGetMatrix(m_body0, &bodyMatrix[0][0]);
@@ -651,22 +791,22 @@ void CustomPlayerController::PlayerOnLand (dFloat timestep, int threadIndex)
 	bodyMatrix.m_posit = posit + step + upDir.Scale (m_stairHeight - m_kinematicCushion);
 	dVector target (bodyMatrix.m_posit - upDir.Scale(m_stairHeight * 2.0f));
 
-	castFilterData.m_count = 1;
-	if (NewtonWorldConvexCast (m_world, &bodyMatrix[0][0], &target[0], m_bodyFloorSensorShape, &hitParam, &castFilterData, ConvexAllBodyCastPrefilter, info, 1, threadIndex)) {
+	dVector floorNormal;
+	if (FindFloor (bodyMatrix, target, upDir, m_bodyFloorSensorShape, hitParam, floorNormal, threadIndex)) {
 		if (hitParam > 1.0e-3f) {
 			int isFuturePosiInRamp;
-
-			dVector	floorNormal (info[0].m_normalOnHitPoint[0], info[0].m_normalOnHitPoint[1], info[0].m_normalOnHitPoint[2], 0.0f);
 			isFuturePosiInRamp = (floorNormal % upDir) < m_maxSlope;
+
 			if (isFuturePosiInRamp) {
 				// apply free fall gravity force to the body along the ramp
 				dFloat hitParam1;
-				NewtonWorldConvexCastReturnInfo info1;
+				dVector floorNormal1;
+
 				bodyMatrix.m_posit = posit + upDir.Scale (m_stairHeight - m_kinematicCushion);
 				target = bodyMatrix.m_posit - upDir.Scale(m_stairHeight * 2.0f);
-				NewtonWorldConvexCast (m_world, &bodyMatrix[0][0], &target[0], m_bodyFloorSensorShape, &hitParam1, &castFilterData, ConvexAllBodyCastPrefilter, &info1, 1, threadIndex);
-
+				FindFloor (bodyMatrix, target, upDir, m_bodyFloorSensorShape, hitParam1, floorNormal1, threadIndex);
 				if (hitParam < hitParam1) {
+
 					int iterations;
 					int contactCount = 1;
 					// the player hit the edge of a forbidden ramp
@@ -684,11 +824,7 @@ void CustomPlayerController::PlayerOnLand (dFloat timestep, int threadIndex)
 						bodyMatrix.m_posit = posit + step + upDir.Scale (m_stairHeight - m_kinematicCushion);
 						target = bodyMatrix.m_posit - upDir.Scale(m_stairHeight * 2.0f);
 
-						castFilterData.m_count = 1;
-						contactCount = NewtonWorldConvexCast (m_world, &bodyMatrix[0][0], &target[0], m_bodyFloorSensorShape, &hitParam, &castFilterData, ConvexAllBodyCastPrefilter, info, 1, threadIndex); 
-						if (contactCount) {
-							floorNormal = dVector (info[0].m_normalOnHitPoint[0], info[0].m_normalOnHitPoint[1], info[0].m_normalOnHitPoint[2], 0.0f);
-							//floorNormal = dVector (info[0].m_normal[0], info[0].m_normal[1], info[0].m_normal[2], 0.0f);
+						if (FindFloor (bodyMatrix, target, upDir, m_bodyFloorSensorShape, hitParam, floorNormal, threadIndex)) {
 							contactCount = (floorNormal % upDir) < m_maxSlope;
 						}
 					}
@@ -714,12 +850,49 @@ void CustomPlayerController::PlayerOnLand (dFloat timestep, int threadIndex)
 			bodyMatrix.m_posit = bodyMatrix.m_posit + (target - bodyMatrix.m_posit).Scale (hitParam) + upDir.Scale (m_kinematicCushion);
 			bodyMatrix.m_posit -= step;
 			NewtonBodySetMatrix (m_body0, &bodyMatrix[0][0]);
-
-
 		}
 	} else {
 		m_playerState = m_onFreeFall;
 	}
 
 	NewtonBodySetVelocity(m_body0, &velocity[0]);
+}
+
+
+
+void CustomPlayerController::KinematicMotion (dFloat timestep, int threadIndex)
+{
+	dFloat turnOmega;
+	dFloat turnAngle;
+	dMatrix bodyMatrix;
+
+	// handle angular velocity and heading
+	NewtonBodyGetMatrix(m_body0, &bodyMatrix[0][0]);
+
+	dVector upDir (bodyMatrix.RotateVector (m_localMatrix0.m_front));
+	dVector frontDir (bodyMatrix.RotateVector (m_localMatrix0.m_up));
+
+	dVector heading (0.0f, dCos (m_heading), dSin (m_heading), 0.0f);
+	heading = m_localMatrix0.RotateVector(heading);
+	turnAngle = (frontDir * heading) % upDir;
+	turnAngle = dAsin (min (max (turnAngle, -1.0f), 1.0f)); 
+	turnOmega = turnAngle / timestep;
+
+	dVector omega (upDir.Scale (turnOmega));
+	NewtonBodySetOmega(m_body0, &omega.m_x);
+
+	switch (m_playerState) 
+	{
+		case m_onFreeFall:
+			PlayerOnFreeFall (timestep, threadIndex);
+			break;
+
+		case m_onLand:
+			PlayerOnLand (timestep, threadIndex);
+			break;
+
+		case m_onIlligalRamp:
+			PlayerOnRamp (timestep, threadIndex);
+			break;
+	}
 }

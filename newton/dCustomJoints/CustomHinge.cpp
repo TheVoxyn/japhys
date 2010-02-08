@@ -1,3 +1,14 @@
+/* Copyright (c) <2009> <Newton Game Dynamics>
+* 
+* This software is provided 'as-is', without any express or implied
+* warranty. In no event will the authors be held liable for any damages
+* arising from the use of this software.
+* 
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely
+*/
+
 
 
 // CustomHinge.cpp: implementation of the CustomHinge class.
@@ -17,6 +28,7 @@ CustomHinge::CustomHinge (const dMatrix& pinAndPivotFrame, const NewtonBody* chi
 	:NewtonCustomJoint(6, child, parent), m_curJointAngle()
 {
 	m_limitsOn = false;
+	m_jointOmega = 0.0f;
 	m_minAngle = -45.0f * 3.141592f / 180.0f;
 	m_maxAngle =  45.0f * 3.141592f / 180.0f;
 
@@ -43,6 +55,24 @@ void CustomHinge::SetLimis(dFloat minAngle, dFloat maxAngle)
 	//_ASSERTE (maxAngle > 0.0f);
 	m_minAngle = minAngle;
 	m_maxAngle = maxAngle;
+}
+
+
+dFloat CustomHinge::GetJointAngle () const
+{
+	return m_curJointAngle.m_angle;
+}
+
+dVector CustomHinge::GetPinAxis () const
+{
+	dMatrix matrix;
+	NewtonBodyGetMatrix (m_body0, &matrix[0][0]);
+	return matrix.RotateVector (m_localMatrix0.m_front);
+}
+
+dFloat CustomHinge::GetJointOmega () const
+{
+	return m_jointOmega;
 }
 
 
@@ -127,6 +157,15 @@ void CustomHinge::SubmitConstraints (dFloat timestep, int threadIndex)
 
 		}
 	}
+
+	// save the current joint Omega
+	dVector omega0(0.0f, 0.0f, 0.0f, 0.0f);
+	dVector omega1(0.0f, 0.0f, 0.0f, 0.0f);
+	NewtonBodyGetOmega(m_body0, &omega0[0]);
+	if (m_body1) {
+		NewtonBodyGetOmega(m_body1, &omega1[0]);
+	}
+	m_jointOmega = (omega0 - omega1) % matrix0.m_front;
  }
 
 

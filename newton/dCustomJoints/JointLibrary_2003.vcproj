@@ -35,24 +35,24 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="newton.lib"
-				OutputFile="$(OutDir)\$(ProjectName).dll"
-				LinkIncremental="2"
+				OutputFile="$(OutDir)\$(ProjectName)_d.dll"
+				LinkIncremental="1"
 				AdditionalLibraryDirectories="../x32\dll_vs7"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/JointLibrary.pdb"
+				ProgramDatabaseFile="$(OutDir)\$(ProjectName)_d.pdb"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/JointLibrary.lib"
+				ImportLibrary="$(OutDir)\$(ProjectName)_d.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy $(OutDir)\$(ProjectName).dll &quot;..\..\samples\bin/X32\*.*&quot;  /F /Y
-xcopy $(OutDir)\$(ProjectName).pdb &quot;..\..\samples\bin/X32\*.*&quot;  /F /Y
+				CommandLine="xcopy $(OutDir)\$(ProjectName)_d.dll &quot;..\..\samples\bin/X32\*.*&quot;  /F /Y
+xcopy $(OutDir)\$(ProjectName)_d.pdb &quot;..\..\samples\bin/X32\*.*&quot;  /F /Y
 
 xcopy JointLibrary.h &quot;..\*.*&quot;  /F /Y
-xcopy $(OutDir)\$(ProjectName).dll &quot;../X32\*.*&quot;  /F /Y
-xcopy $(OutDir)\$(ProjectName).lib &quot;../X32\*.*&quot;  /F /Y
+xcopy $(OutDir)\$(ProjectName)_d.dll &quot;../X32\*.*&quot;  /F /Y
+xcopy $(OutDir)\$(ProjectName)_d.lib &quot;../X32\*.*&quot;  /F /Y
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -84,8 +84,8 @@ xcopy $(OutDir)\$(ProjectName).lib &quot;../X32\*.*&quot;  /F /Y
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="CustomJointLibraryStdAfx.h"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="TRUE"
+				WarningLevel="4"
+				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="3"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -96,11 +96,11 @@ xcopy $(OutDir)\$(ProjectName).lib &quot;../X32\*.*&quot;  /F /Y
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../x32\dll_vs7"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/JointLibrary.pdb"
+				ProgramDatabaseFile="$(OutDir)\$(ProjectName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/JointLibrary.lib"
+				ImportLibrary="$(OutDir)\$(ProjectName).lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>

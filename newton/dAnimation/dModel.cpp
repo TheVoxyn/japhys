@@ -1,3 +1,14 @@
+/* Copyright (c) <2009> <Newton Game Dynamics>
+* 
+* This software is provided 'as-is', without any express or implied
+* warranty. In no event will the authors be held liable for any damages
+* arising from the use of this software.
+* 
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely
+*/
+
 #include <dAnimationStdAfx.h>
 #include <dBone.h>
 #include <dMesh.h>
@@ -117,6 +128,16 @@ void dModel::BindMeshToBonesByName () const
 	}
 }
 
+int dModel::GetBoneCount() const
+{
+	int count = 0;
+	for (ModelComponentList<dList<dBone*> >::dListNode* list = m_skeleton.GetFirst(); list; list = list->GetNext()) {
+		for (dList<dBone*>::dListNode* node = list->GetInfo().m_data.GetFirst(); node; node = node->GetNext()) { 
+			count += node->GetInfo()->GetBonesCount();
+		}
+	}
+	return count;
+}
 
 void dModel::UpdateMatrixPalette (const dMatrix& parentMatrix, dMatrix* const matrixOut, int maxCount) const
 {
@@ -485,4 +506,5 @@ void dModel::Load (const char* name, dLoaderContext& context)
 
 	context.LoaderFixup (this);
 }
+
 

@@ -5664,7 +5664,7 @@ qboolean G_RadiusDamage ( vec3_t origin, gentity_t *attacker, float damage, floa
 		                dir[2] -= 24.0f;
 		                if ( Q_stricmp (ent->classname, "func_physics") == 0 )
 		                {
-		                    float maxstrength = 500.0f * (1.0f - dist / radius);
+		                    const float maxstrength = 500.0f * (1.0f - dist / radius);
 		                    VectorNormalize (dir);
 		                    
 		                    VectorScale (dir, maxstrength, dir);

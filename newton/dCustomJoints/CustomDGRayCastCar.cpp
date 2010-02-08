@@ -1,3 +1,14 @@
+/* Copyright (c) <2009> <Newton Game Dynamics>
+* 
+* This software is provided 'as-is', without any express or implied
+* warranty. In no event will the authors be held liable for any damages
+* arising from the use of this software.
+* 
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely
+*/
+
 // CustomDGRayCastCar.cpp: implementation of the CustomDGRayCastCar class.
 // This raycast vehicle is currently a work in progress by Dave Gravel - 2009.
 // Vehicle Raycast and convexCast Version 3.0b
@@ -32,8 +43,8 @@ CustomDGRayCastCar::CustomDGRayCastCar (int maxTireCount, const dMatrix& cordena
 	m_tiresCount = 0;
 	m_vehicleOnAir = 0;
 	m_steerAngle = 0.0f;
-	// set defalt break force sa a function of the vehicl weight 
-	// 2 time the car weight asuming gravity is 10 
+	//set default break force as a function of the vehicle weight 
+	//2 time the car weight assuming gravity is 10 
 	m_maxBrakeForce = 2.0f * m_mass * 10.0f;	
 	m_maxSteerAngle = 30.0f * DefPO;
 	m_maxSteerRate = 0.075f;
@@ -64,20 +75,21 @@ CustomDGRayCastCar::CustomDGRayCastCar (int maxTireCount, const dMatrix& cordena
 	// set the joint reference point at the center of mass of the body
 	NewtonBodyGetMatrix (m_body0, &chassisMatrix[0][0]);
 
-//  make sure the system matrix do no have any translations of it
+	//make sure the system matrix do not have any translations on it
 	dMatrix cordenateSytemLocal (cordenateSytem);
 	cordenateSytemLocal.m_posit = dVector (0.0f, 0.0f, 0.0f, 1.0f);
 	chassisMatrix.m_posit += chassisMatrix.RotateVector (com);
 	chassisMatrix = cordenateSytemLocal * chassisMatrix;
 
-	// set the car local cordenade system
+	// set the car local coordinate system
 	CalculateLocalMatrix ( chassisMatrix, m_localFrame, tmp );
 
 	// allocate space for the tires;
 	m_tires = new Tire[maxTireCount];
 
-	// Create a simplyfied Normalized Tire Curve
-	// we will sue a simple piece wise curve but user ca use advace cubers like teh Pacejkas model
+	// Create a simplified normalized Tire Curve
+	// we will use a simple piece wise curve at this time, 
+	// but end application user can use advance cubers like the Pacejkas tire model
 
 	dFloat slips[] = {0.0f, 0.3f, 0.5f, 2.0f};
 	dFloat normalizedLongitudinalForce[] = {0.0f, 1.0f, 0.9f, 0.7f};
@@ -91,7 +103,7 @@ CustomDGRayCastCar::CustomDGRayCastCar (int maxTireCount, const dMatrix& cordena
 //	m_aerodynamicDrag = 0.1f; 
 //	m_aerodynamicDownForce = 0.1f; 
 
-	// set linar and Angula Drag to zero, ths joint will handle this by using Aerodunamic Drag;
+	// set linear and angular Drag to zero, this joint will handle this by using Aerodynamic Drag;
 	dVector drag (0.0f, 0.0f, 0.0f, 0.0f); 
 	NewtonBodySetLinearDamping (m_body0, 0.0f);
 	NewtonBodySetAngularDamping (m_body0, &drag[0]);
@@ -362,7 +374,7 @@ dFloat CustomDGRayCastCar::GenerateTiresSteerAngle (dFloat value)
 
 dFloat CustomDGRayCastCar::GenerateEngineTorque (dFloat value)
 {
-	// this finyion generate Engine Torque using the transmition and tire angular speed
+	// this function generates Engine Torque using the transmision and tire angular speed
 	/// for now just engine torque is fixed
 	return -value * 500.0f;
 
@@ -567,9 +579,9 @@ void CustomDGRayCastCar::SetVarTireMovePointForceUp (int index, dFloat distance)
 
 dFloat CustomDGRayCastCar::ApplySuspenssionLimit (Tire& tire)
 { 
-	// This add a hard suspenssion limit. 
-	// At very high speed the vehicle mass can make get the suspenssion limit faster.
-	// This solution avoid this problem and push up the suspenssion.
+	// This add a hard suspension limit. 
+	// At very high speed the vehicle mass can make get the suspension limit faster.
+	// This solution avoid this problem and push up the suspension.
 	dFloat distance;
 	distance = tire.m_suspensionLenght - tire.m_posit;
 	if (distance>=tire.m_suspensionLenght){
@@ -786,7 +798,7 @@ void CustomDGRayCastCar::ApplyTireFrictionVelocitySiding (Tire& tire, const dMat
 
 	tire.m_breakForce = 0.0f;  
 
-	//submit contraind for applying side forces.
+	//submit constrained for applying side forces.
 	frictionCircleMag = tire.m_tireLoad * tire.m_groundFriction;
 	lateralFrictionForceMag = frictionCircleMag;
 	longitudinalFrictionForceMag = tire.m_tireLoad;
@@ -880,14 +892,14 @@ void CustomDGRayCastCar::IntegrateTires (dFloat timestep, int threadIndex)
 			if (tire.m_breakForce > 1.0e-3f) {
 				tire.m_angularVelocity = 0.0f;
 			} else {
-				//the tire is on air, need to be integrate net toque and apply a drag coneficenct
+				//the tire is on air, need to be integrate net toque and apply a drag coeficient
 				dFloat torque;
 				torque = tire.m_torque - tire.m_angularVelocity * tire.m_Ixx * TIRE_VISCUOS_DAMP;
 				tire.m_angularVelocity += torque * tire.m_IxxInv * timestep;
 			}
 		} else if (tire.m_tireIsConstrained) {
 			// the torqued generate by the tire can no be larger than the external torque on the tire 
-			// when this happens ther tire is spinning unde contrained rotation 
+			// when this happens there tire is spinning under constrained rotation 
 
 			// V % dir + W * R % dir = 0
 			// where V is the tire Axel velocity
@@ -1000,7 +1012,7 @@ void CustomDGRayCastCar::SubmitConstraints (dFloat timestep, int threadIndex)
 			suspensionSpeed = - (relVeloc % chassisMatrix.m_up);
 
 			// now calculate the tire load at the contact point
-			// Tire suspenssion distance and hard limit.
+			// Tire suspension distance and hard limit.
 			distance = tire.m_suspensionLenght - tire.m_posit;
 			_ASSERTE (distance <= tire.m_suspensionLenght);
 			tire.m_tireLoad = - NewtonCalculateSpringDamperAcceleration (timestep, tire.m_springConst, distance, tire.m_springDamper, suspensionSpeed );
@@ -1015,16 +1027,16 @@ void CustomDGRayCastCar::SubmitConstraints (dFloat timestep, int threadIndex)
 			tire.m_tireIsConstrained = (dAbs (tire.m_torque) < 0.3f);
 
 			// convert the tire load force magnitude to a torque and force.
-			// accumulate the force doe to the suspention spring and damper
+			// accumulate the force doe to the suspension spring and damper
 			tire.m_tireForceAcc += chassisMatrix.m_up.Scale (tire.m_tireLoad);
 
 			// calculate relative velocity at the tire center
 			dVector tireAxelRelativeVelocity (tire.m_tireAxelVeloc - tire.m_hitBodyPointVelocity); 
 
-			// axel linear speed
+			// axle linear speed
 			axelLinealSpeed = tireAxelRelativeVelocity % chassisMatrix.m_front;
 
-			// calculate tire roation velocity at the tire radio
+			// calculate tire rotation velocity at the tire radio
 			dVector tireAngularVelocity (tire.m_lateralPin.Scale (tire.m_angularVelocity));
 			dVector tireRadius (tire.m_contactPoint - tire.m_tireAxelPosit);
 			dVector tireRotationalVelocityAtContact (tireAngularVelocity * tireRadius);	
@@ -1032,7 +1044,7 @@ void CustomDGRayCastCar::SubmitConstraints (dFloat timestep, int threadIndex)
 			longitudinalForceMag = 0.0f;
 //			if (!tire.m_tireIsConstrained) {
 				
-				// calulate slip ratio and max longitudinal force
+				// calculate slip ratio and max longitudinal force
 				tireRotationSpeed = tireRotationalVelocityAtContact % tire.m_longitudinalPin;
 				slipRatioCoef = (dAbs (axelLinealSpeed) > 1.e-3f) ? ((-tireRotationSpeed - axelLinealSpeed) / dAbs (axelLinealSpeed)) : 0.0f;
 
@@ -1051,7 +1063,7 @@ void CustomDGRayCastCar::SubmitConstraints (dFloat timestep, int threadIndex)
 			// Apply brake, need some little fix here.
 			// The fix is need to generate axial force when the brake is apply when the vehicle turn from the steer or on sliding.
 			if ( tire.m_breakForce > 1.0e-3f ) {
-				// save teh row werr this contartin force is save for later determoine teh dynamic state of this tire 
+				// row constrained force is save for later determine the dynamic state of this tire 
   				tire.m_isBrakingForceIndex = constraintIndex;
 				constraintIndex ++;
 
@@ -1065,7 +1077,7 @@ void CustomDGRayCastCar::SubmitConstraints (dFloat timestep, int threadIndex)
 				NewtonUserJointSetRowMaximumFriction( m_joint, tire.m_breakForce);
 				NewtonUserJointSetRowMinimumFriction( m_joint, -tire.m_breakForce);
 
-				// there is a longituninal force that will reduce the lateral force, we ned to recalculate the lateral force
+				// there is a longitudinal force that will reduce the lateral force, we need to recalculate the lateral force
 				tireForceMag = lateralFrictionForceMag * lateralFrictionForceMag + tire.m_breakForce * tire.m_breakForce;
 				if (tireForceMag > (frictionCircleMag * frictionCircleMag)) {
   					lateralFrictionForceMag *= 0.25f * frictionCircleMag / dSqrt (tireForceMag);
@@ -1101,11 +1113,11 @@ void CustomDGRayCastCar::SubmitConstraints (dFloat timestep, int threadIndex)
 			NewtonBodyAddTorque( m_body0, &torque[0] );
 
 
-			// calculate the net tique on teh tire
+			// calculate the net torque on the tire
 			tireTorqueMag = -((tireRadius * tireForce) % tire.m_lateralPin);
 			if (dAbs (tireTorqueMag) > dAbs (tire.m_torque)) {
-				// the tire reation force can no be larger tha the applyed engine torque 
-				// when thsi happens the net tirque is zero and teh tire is contrained to teh vehicle linera motion
+				// the tire reaction force can no be larger than the applied engine torque 
+				// when this happens the net torque is zero and the tire is constrained to the vehicle linear motion
 				tire.m_tireIsConstrained = 1;
 				tireTorqueMag = tire.m_torque;
 			}
@@ -1114,5 +1126,6 @@ void CustomDGRayCastCar::SubmitConstraints (dFloat timestep, int threadIndex)
 		} 	
 	}
 }
+
 
 

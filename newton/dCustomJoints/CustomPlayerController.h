@@ -1,3 +1,14 @@
+/* Copyright (c) <2009> <Newton Game Dynamics>
+* 
+* This software is provided 'as-is', without any express or implied
+* warranty. In no event will the authors be held liable for any damages
+* arising from the use of this software.
+* 
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely
+*/
+
 #if !defined(AFX_CUSTOM_PLAYER_CONTROLLER_INCLUDED)
 #define AFX_CUSTOM_PLAYER_CONTROLLER_INCLUDED
 
@@ -20,32 +31,40 @@ class JOINTLIBRARY_API CustomPlayerController: public NewtonCustomJoint
 	dFloat GetMaxSlope () const;
 	void SetMaxSlope (dFloat maxSlopeAngleIndRadian);
 	void SetVelocity (dFloat forwardSpeed, dFloat sideSpeed, dFloat heading);
+	void GetVelocity (dFloat& forwardSpeed, dFloat& sideSpeed, dFloat& heading) const;
 	dMatrix CalculateVisualMatrix () const;
+
+	dFloat GetPlayerHeight() const;
+	dFloat GetPlayerStairHeight() const;
 	
 /*
 	virtual bool CanPushBody (const NewtonBody* hitBody) const {return true;}
 	const NewtonCollision* GetDynamicsSensorShape () const;
 */	
 	const NewtonCollision* GetSensorShape () const;
+	const NewtonCollision* GetStairStepShape () const;
 
 
 	protected:
 	virtual void SubmitConstraints (dFloat timestep, int threadIndex);
 
 	private:
+
+	
+
 	void PlayerOnLand (dFloat timestep, int threadIndex);
 	void PlayerOnRamp (dFloat timestep, int threadIndex);
 	void PlayerOnFreeFall (dFloat timestep, int threadIndex);
 	void KinematicMotion (dFloat timestep, int threadIndex);
+	int FindFloor (const dMatrix& origin, const dVector& dest, const dVector upDir, NewtonCollision* m_bodySensorShape, dFloat& hitParam, dVector& normal, int threadIndex) const;
 
+	int PreProcessContacts (NewtonWorldConvexCastReturnInfo* const contacts, int count, const dVector& updir) const;
 	dVector CalculateVelocity (const dVector& velocSrc, dFloat timestep, const dVector& upDir, dFloat elevation, int threadIndex) const;
 
 	
-
 	static void KinematicMotion (const NewtonJoint* userJoint, dFloat timestep, int threadIndex);
 	static unsigned ConvexStaticCastPrefilter(const NewtonBody* body, const NewtonCollision* collision, void* userData);
 	static unsigned ConvexAllBodyCastPrefilter(const NewtonBody* body, const NewtonCollision* collision, void* userData);
-//	static dFloat FindFloorCallback(const NewtonBody* body, const dFloat* hitNormal, int collisionID, void* userData, dFloat intersetParam);
 
 	protected:
 	struct CastFilterData
@@ -58,6 +77,7 @@ class JOINTLIBRARY_API CustomPlayerController: public NewtonCustomJoint
 		int m_count;
 		const NewtonBody* m_filter[8];
 	};
+
 /*
 	struct FindFloorData
 	{
@@ -75,14 +95,6 @@ class JOINTLIBRARY_API CustomPlayerController: public NewtonCustomJoint
 		const NewtonBody* m_hitBody; 
 	};
 */
-/*
-
-	virtual void GetInfo (NewtonJointRecord* info) const;
-	static unsigned ConvexDynamicCastPrefilter(const NewtonBody* body, const NewtonCollision* collision, void* userData);
-	NewtonCollision* m_dynamicsCollisionShape;
-*/
-	
-
 	
 	dFloat m_heading;
 	dFloat m_loweCap;

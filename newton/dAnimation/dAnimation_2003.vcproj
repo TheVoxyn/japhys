@@ -4,6 +4,7 @@
 	Version="7.10"
 	Name="dAnimation"
 	ProjectGUID="{11290105-C0F0-47B7-8E92-CE112BAF4DD8}"
+	RootNamespace="dAnimation"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -19,7 +20,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="./;../;../dMath;../dContainers;../../samples\thirdParties\tinyxml"
+				AdditionalIncludeDirectories="./;../;../dMath;../dContainers;../tinyxml"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -27,17 +28,18 @@
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="dAnimationStdAfx.h"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="TRUE"
+				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="4"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/newtonAnimation.lib"/>
+				OutputFile="$(OutDir)/$(ProjectName)_d.lib"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				CommandLine="xcopy $(OutDir)\$(ProjectName)_d.lib &quot;../X32\*.*&quot;  /F /Y"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -61,23 +63,24 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="./;../;../dMath;../dContainers;../../samples\thirdParties\tinyxml"
+				AdditionalIncludeDirectories="./;../;../dMath;../dContainers;../tinyxml"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="dAnimationStdAfx.h"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="TRUE"
+				WarningLevel="4"
+				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="3"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/newtonAnimation.lib"/>
+				OutputFile="$(OutDir)/$(ProjectName).lib"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				CommandLine="xcopy $(OutDir)\$(ProjectName).lib &quot;../X32\*.*&quot;  /F /Y"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool

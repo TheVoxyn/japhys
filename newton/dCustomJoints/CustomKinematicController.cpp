@@ -1,3 +1,14 @@
+/* Copyright (c) <2009> <Newton Game Dynamics>
+* 
+* This software is provided 'as-is', without any express or implied
+* warranty. In no event will the authors be held liable for any damages
+* arising from the use of this software.
+* 
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely
+*/
+
 
 // CustomKinematicController.cpp: implementation of the CustomKinematicController class.
 //
@@ -222,7 +233,7 @@ void CustomKinematicController::SubmitConstraints (dFloat timestep, int threadIn
 		}
 
 	} else {
-		// this is the single handle pick mode, add soem angular frition
+		// this is the single handle pick mode, add soem angular friction
 
 		dVector relAlpha = w.Scale (-invTimestep);
 		NewtonUserJointAddAngularRow (m_joint, 0.0f, &matrix0.m_front[0]);
@@ -241,5 +252,6 @@ void CustomKinematicController::SubmitConstraints (dFloat timestep, int threadIn
 		NewtonUserJointSetRowMaximumFriction (m_joint,  m_maxAngularFriction * 0.025f);
 	}
 }
+
 
 

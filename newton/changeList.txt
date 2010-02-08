@@ -46,6 +46,8 @@ Newton Game Dynamic 2.0
 - function callback (*NewtonContactsProcess) now passes the colliding bodies and  tiemstep as argument
 - function callback (*NewtonContactEnd) now passes  the colliding bodies as arguments
 
+- added NewtonCreate no loneg take teh memory function as argument, 
+- added NewtonSetMemorySystem to resolve creation of mutiples world conflicts for reparate application threads
 - added NewtonMesh object, for special effect functionality. 
 - added NewtonCreateHeightFieldCollision object as collision primitive. 
 - added came is now multi cores support using the OS native multi threaded API
@@ -75,9 +77,12 @@ Newton Game Dynamic 2.0
 - added function NewtonContactGetMaterial to collect the material asigned to a contact jrom a contact joint ;
 - added function NewtonUserJointSetFeedbackCollectorCallback allow for joint to read the force after the solver solution and before integration 
 - added function NewtonCreateConvexHullFromMesh to create effect collision for a mesh effect.
-- added function NewtonCreateCompoundCollisionFromMesh to create compound collisions from airtight coinve meshes. 
+- added function NewtonCreateCollisionCompoundFromMesh to create compound collisions from airtight coinve meshes. 
 - added function NewtonBodyCalculateInverseDynamicsForce to calculate invesedymnai forces during callbacks
 - added function NewtonWorldGetConstraintCount
+- added function NewtonCollisionSetMaxBreakForce for setting max breaking force of a shape
+- added function NewtonCollisionSetMaxBreakForce for reading max breaking force of a shape
+
 - added CustumRayCastVehicle as custom joint
 - added CustumMultibodyVehicle as custom joint
 - added function NewtonWorldCriticalSectionLock/NewtonWorldCriticalSectionUnlock for executing unsafe code form call back.
@@ -85,6 +90,9 @@ Newton Game Dynamic 2.0
 - added funtion NewtonWorldGetFirstBody/NewtonWorldGetNextBody for iteration ove the body list 
 - added funtion NewtonCollisionUpdate for applications that require scene base collision system independent from dynamicss update.
 - added Destructor call back to teh Newton World. 
+- added Boolean Operation of NewtonMesh. 
+- added Simple Convex Spahe Destruction effect. 
+
 
 - removed NewtonWorldForEachBodyDo use NewtonWorldGetFirstBody/NewtonWorldGetNextBody pair
 - removed NewtonContactEnd use NewtonContactsProcess

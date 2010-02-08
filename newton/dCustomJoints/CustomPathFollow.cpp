@@ -1,3 +1,14 @@
+/* Copyright (c) <2009> <Newton Game Dynamics>
+* 
+* This software is provided 'as-is', without any express or implied
+* warranty. In no event will the authors be held liable for any damages
+* arising from the use of this software.
+* 
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely
+*/
+
 
 // CustomPathFollow.cpp: implementation of the CustomPathFollow class.
 //
@@ -87,7 +98,7 @@ dMatrix CustomPathFollow::EvalueCurve (const dVector& posit)
 	//the tangent of the path is the line slope, passes in the forst matrix dir
 	matrix.m_front = lineSlope;
 
-	// the normal will be such tha is is hortizaontl to the teh floor and perpendicular to teh path 
+	// the normal will be such tha is is hortizaontl to the the floor and perpendicular to the path 
 	dVector normal (dVector (0.0f, 1.0f, 0.0f, 0.0f) * matrix.m_front);
 	matrix.m_up = normal.Scale (1.0f / dSqrt (normal % matrix.m_front));
 
@@ -107,7 +118,7 @@ void CustomPathFollow::SubmitConstraints (dFloat timestep, int threadIndex)
 
 	dMatrix matrix1 (EvalueCurve (matrix0.m_posit));
 
-	// Restrict the movement on the pivot point along all tree teh normal and binormal of the path
+	// Restrict the movement on the pivot point along all tree the normal and binormal of the path
 	const dVector& p0 = matrix0.m_posit;
 	const dVector& p1 = matrix1.m_posit;
 
@@ -148,5 +159,6 @@ void CustomPathFollow::SubmitConstraints (dFloat timestep, int threadIndex)
 	NewtonUserJointSetRowMaximumFriction(m_joint, MaxFriction);
 */
 }
+
 
 

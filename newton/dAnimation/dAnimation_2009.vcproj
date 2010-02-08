@@ -45,7 +45,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="./;../;../dMath;../dContainers;../../samples\thirdParties\tinyxml"
+				AdditionalIncludeDirectories="./;../;../dMath;../dContainers;../tinyxml"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -67,7 +67,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/$(ProjectName).lib"
+				OutputFile="$(OutDir)/$(ProjectName)_d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -83,6 +83,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy $(OutDir)\$(ProjectName)_d.lib &quot;../X32\*.*&quot;  /F /Y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -112,7 +113,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="./;../;../dMath;../dContainers;../../samples\thirdParties\tinyxml"
+				AdditionalIncludeDirectories="./;../;../dMath;../dContainers;../tinyxml"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -134,7 +135,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/$(ProjectName).lib"
+				OutputFile="$(OutDir)/$(ProjectName)_d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -150,6 +151,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy $(OutDir)\$(ProjectName)_d.lib &quot;../X64\*.*&quot;  /F /Y"
 			/>
 		</Configuration>
 		<Configuration
@@ -177,7 +179,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="./;../;../dMath;../dContainers;../../samples\thirdParties\tinyxml"
+				AdditionalIncludeDirectories="./;../;../dMath;../dContainers;../tinyxml"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -213,6 +215,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy $(OutDir)\$(ProjectName).lib &quot;../X32\*.*&quot;  /F /Y"
 			/>
 		</Configuration>
 		<Configuration
@@ -241,7 +244,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="./;../;../dMath;../dContainers;../../samples\thirdParties\tinyxml"
+				AdditionalIncludeDirectories="./;../;../dMath;../dContainers;../tinyxml"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -277,12 +280,13 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy $(OutDir)\$(ProjectName).lib &quot;../X64\*.*&quot;  /F /Y"
 			/>
 		</Configuration>
 		<Configuration
 			Name="debug_Double|Win32"
-			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
@@ -305,7 +309,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="./;../;../dMath;../dContainers;../../samples\thirdParties\tinyxml"
+				AdditionalIncludeDirectories="./;../;../dMath;../dContainers;../tinyxml"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -343,6 +347,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy $(OutDir)\$(ProjectName).lib &quot;../X32\*.*&quot;  /F /Y"
 			/>
 		</Configuration>
 		<Configuration
@@ -372,7 +377,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="./;../;../dMath;../dContainers;../../samples\thirdParties\tinyxml"
+				AdditionalIncludeDirectories="./;../;../dMath;../dContainers;../tinyxml"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -394,7 +399,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/$(ProjectName).lib"
+				OutputFile="$(OutDir)/$(ProjectName)_d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -410,6 +415,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy $(OutDir)\$(ProjectName).lib &quot;../X64\*.*&quot;  /F /Y"
 			/>
 		</Configuration>
 	</Configurations>

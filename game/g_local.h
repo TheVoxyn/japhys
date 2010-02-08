@@ -355,6 +355,12 @@ struct gentity_s {
 
 	vec3_t		epVelocity;
 	float		epGravFactor;
+	
+	//[Physics]
+	vec3_t      forceApplied;
+	int         forceThrowTime;
+	float       bodyVolume;
+	//[/Physics]
 
 	gitem_t		*item;			// for bonus items
 };
@@ -1482,6 +1488,12 @@ int		InFieldOfVision	( vec3_t viewangles, float fov, vec3_t angles);
 // ai_util.c
 void B_InitAlloc(void);
 void B_CleanupAlloc(void);
+
+//[Physics]
+// g_physics.cpp
+void G_AddStaticEntity ( gentity_t *ent, entityType_t entityType );
+void G_RemoveStaticEntity ( gentity_t *ent );
+//[/Physics]
 
 //bot settings
 typedef struct bot_settings_s
