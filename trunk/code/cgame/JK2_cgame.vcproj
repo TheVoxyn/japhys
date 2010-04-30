@@ -29,8 +29,8 @@
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
-				Description="Copy DLL files"
-				CommandLine="if exist &quot;$(SolutionDir)\..\$(TargetFileName)&quot; attrib -r &quot;$(SolutionDir)\..\$(TargetFileName)&quot;&#x0D;&#x0A;if exist &quot;$(TargetDir)&quot;$(TargetFileName) copy &quot;$(TargetDir)&quot;$(TargetFileName) &quot;$(SolutionDir)\..\$(TargetFileName)&quot;&#x0D;&#x0A;"
+				Description=""
+				CommandLine=""
 				Outputs=""
 			/>
 			<Tool
