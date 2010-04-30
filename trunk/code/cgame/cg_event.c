@@ -8,7 +8,7 @@
 #include "../ui/ui_public.h"
 
 // for the voice chats
-#include "../../ui/menudef.h"
+#include "../../assets/ui/menudef.h"
 
 #include "../ghoul2/G2.h"
 //==========================================================================
