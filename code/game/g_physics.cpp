@@ -160,10 +160,10 @@ static void G_PhysicsEntitySetTransform ( const NewtonBody* body, const dFloat* 
     //Com_Printf ("PHYSICS: updating %d old position: %s new position %s\n", ent->s.number, vtos (oldPosition), vtos (newPosition));
 }
 
-static void G_PhysicsEntityAddComposite ( gentity_t* ent, NewtonCollision** collision )
+/*static void G_PhysicsEntityAddComposite ( gentity_t* ent, NewtonCollision** collision )
 {
     //collision = NewtonCreateSphere (world, size[0] * 0.5f, size[2] * 0.5f, size[1] * 0.5f, NULL);
-}
+}*/
 
 static void G_PhysicsEntityAddSphere ( gentity_t* ent, NewtonCollision** collision, qboolean reduce = qtrue )
 {

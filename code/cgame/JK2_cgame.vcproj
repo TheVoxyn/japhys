@@ -31,7 +31,7 @@
 				Name="VCCustomBuildTool"
 				Description="Copy DLL files"
 				CommandLine="if exist &quot;$(SolutionDir)\..\$(TargetFileName)&quot; attrib -r &quot;$(SolutionDir)\..\$(TargetFileName)&quot;&#x0D;&#x0A;if exist &quot;$(TargetDir)&quot;$(TargetFileName) copy &quot;$(TargetDir)&quot;$(TargetFileName) &quot;$(SolutionDir)\..\$(TargetFileName)&quot;&#x0D;&#x0A;"
-				Outputs="&quot;$(SolutionDir)\..\$(TargetFileName)&quot;"
+				Outputs=""
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"
@@ -137,9 +137,9 @@
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
-				Description="Copying DLL files"
-				CommandLine="if exist &quot;$(SolutionDir)\..\$(TargetFileName)&quot; attrib -r &quot;$(SolutionDir)\..\$(TargetFileName)&quot;&#x0D;&#x0A;if exist &quot;$(TargetDir)&quot;$(TargetFileName) copy &quot;$(TargetDir)&quot;$(TargetFileName) &quot;$(SolutionDir)\..\$(TargetFileName)&quot;&#x0D;&#x0A;"
-				Outputs="&quot;$(SolutionDir)\..\$(TargetFileName)&quot;"
+				Description=""
+				CommandLine=""
+				Outputs=""
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"

@@ -287,16 +287,13 @@ static qboolean LoadMapData ( const char* mapname, char** mapBuffer )
 }
 
 static qboolean LoadCollisionMap ( const char* mapname )
-{
-    dheader_t* header;
-    qboolean loadSuccessful = qtrue;
-    
+{   
     if ( !LoadMapData (mapname, &mapBuffer) )
     {
         return qfalse;
     }
     
-    header = (dheader_t*)mapBuffer;
+    dheader_t* header = (dheader_t*)mapBuffer;
     
     if ( header->ident != BSP_IDENT || header->version != BSP_VERSION )
     {
@@ -490,8 +487,6 @@ qboolean BG_InitPhysics ( const char* mapname )
     {
         return qfalse;
     }
-    
-    int defaultID = NewtonMaterialGetDefaultGroupID (bg_physicsWorld);
     
     return qtrue;
 }
