@@ -1,0 +1,57 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dMath", "..\dMath\dMath_2003.vcproj", "{C9D26B20-53F9-472A-9E17-6F13038A28DE}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dContainers", "..\dContainers\dContainers_2003.vcproj", "{AFA1A789-0B70-4F5F-8425-393F554328E2}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JointLibrary", "..\dCustomJoints\JointLibrary_2003.vcproj", "{C8532CCA-70D0-4277-8196-CAA908D66DD3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C9D26B20-53F9-472A-9E17-6F13038A28DE} = {C9D26B20-53F9-472A-9E17-6F13038A28DE}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "..\tinyxml\tinyxml_lib_2003.vcproj", "{7F64C6E4-EC5B-4F3E-A5C2-41461E9A4128}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dAnimation", "..\dAnimation\dAnimation_2003.vcproj", "{11290105-C0F0-47B7-8E92-CE112BAF4DD8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7F64C6E4-EC5B-4F3E-A5C2-41461E9A4128} = {7F64C6E4-EC5B-4F3E-A5C2-41461E9A4128}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{C9D26B20-53F9-472A-9E17-6F13038A28DE}.Debug.ActiveCfg = Debug|Win32
+		{C9D26B20-53F9-472A-9E17-6F13038A28DE}.Debug.Build.0 = Debug|Win32
+		{C9D26B20-53F9-472A-9E17-6F13038A28DE}.Release.ActiveCfg = Release|Win32
+		{C9D26B20-53F9-472A-9E17-6F13038A28DE}.Release.Build.0 = Release|Win32
+		{AFA1A789-0B70-4F5F-8425-393F554328E2}.Debug.ActiveCfg = Debug|Win32
+		{AFA1A789-0B70-4F5F-8425-393F554328E2}.Debug.Build.0 = Debug|Win32
+		{AFA1A789-0B70-4F5F-8425-393F554328E2}.Release.ActiveCfg = Release|Win32
+		{AFA1A789-0B70-4F5F-8425-393F554328E2}.Release.Build.0 = Release|Win32
+		{C8532CCA-70D0-4277-8196-CAA908D66DD3}.Debug.ActiveCfg = Debug|Win32
+		{C8532CCA-70D0-4277-8196-CAA908D66DD3}.Debug.Build.0 = Debug|Win32
+		{C8532CCA-70D0-4277-8196-CAA908D66DD3}.Release.ActiveCfg = Release|Win32
+		{C8532CCA-70D0-4277-8196-CAA908D66DD3}.Release.Build.0 = Release|Win32
+		{7F64C6E4-EC5B-4F3E-A5C2-41461E9A4128}.Debug.ActiveCfg = Debug|Win32
+		{7F64C6E4-EC5B-4F3E-A5C2-41461E9A4128}.Debug.Build.0 = Debug|Win32
+		{7F64C6E4-EC5B-4F3E-A5C2-41461E9A4128}.Release.ActiveCfg = Release|Win32
+		{7F64C6E4-EC5B-4F3E-A5C2-41461E9A4128}.Release.Build.0 = Release|Win32
+		{11290105-C0F0-47B7-8E92-CE112BAF4DD8}.Debug.ActiveCfg = Debug|Win32
+		{11290105-C0F0-47B7-8E92-CE112BAF4DD8}.Debug.Build.0 = Debug|Win32
+		{11290105-C0F0-47B7-8E92-CE112BAF4DD8}.Release.ActiveCfg = Release|Win32
+		{11290105-C0F0-47B7-8E92-CE112BAF4DD8}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
