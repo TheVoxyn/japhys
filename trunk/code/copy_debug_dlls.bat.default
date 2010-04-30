@@ -1,0 +1,10 @@
+@echo off
+
+set moddir="D:\Games\JKA\GameData\japhys"
+set compiletype=Debug
+
+if exist %moddir%\jampgamex86.dll del %moddir%\jampgamex86.dll
+if exist %moddir%\cgamex86.dll del %moddir%\cgamex86.dll
+
+copy .\%compiletype%\jampgamex86.dll %moddir%
+copy .\%compiletype%\cgamex86.dll %moddir%
