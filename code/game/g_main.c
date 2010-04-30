@@ -473,7 +473,7 @@ static cvarTable_t		gameCvarTable[] = {
 //[Physics]
     { &phys_fluidLinearViscosity, "phys_fluidLinearViscosity", "0.8", CVAR_ARCHIVE, 0, qtrue },
     { &phys_fluidAngularViscosity, "phys_fluidAngularViscosity", "0.8", CVAR_ARCHIVE, 0, qtrue },
-    { &phys_fluidDensity, "phys_fluidDensity", "4.2", CVAR_ARCHIVE, 0, qtrue },
+    { &phys_fluidDensity, "phys_fluidDensity", "41.2", CVAR_ARCHIVE, 0, qtrue },
 //[/Physics]
 };
 
