@@ -3810,7 +3810,7 @@ void ForceThrow( gentity_t *self, qboolean pull )
 			//[Physics]
 			else if ( Q_stricmp ("func_physics", push_list[x]->classname) == 0 )
 			{
-			    const float strength = 60000.0f;
+			    const float strength = 2000.0f;
 			    
 			    VectorCopy (push_list[x]->r.currentOrigin, thispush_org);
 			    VectorCopy (self->client->ps.origin, tfrom);
