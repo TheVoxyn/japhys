@@ -102,18 +102,16 @@ static void G_PhysicsEntityThink ( const NewtonBody* body, dFloat timestep, int 
         NewtonBodyAddBuoyancyForce (body, phys_fluidDensity.value * (ent->mass / baseRigidBodyMass) * (baseRigidBodyVolume / ent->bodyVolume), phys_fluidLinearViscosity.value, phys_fluidAngularViscosity.value, &gravity[0], GetBuoyancyPlane, (void*)&tr);
     }
     
+    vec3_t impulse, origin;
+    BG_QuakeToSIUnits (ent->forceApplied, impulse);
+    BG_QuakeToSIUnits (ent->s.origin, origin);
+    VectorScale (impulse, 5.0f / ent->mass, impulse);
+    
+    NewtonBodyAddImpulse (body, &impulse[0], &origin[0]);
+    VectorClear (ent->forceApplied); 
+    
     vec3_t force;
     VectorClear (force);
-    
-    if ( (ent->forceThrowTime + 750) > level.time )
-    {
-        BG_QuakeToSIUnits (ent->forceApplied, force);        
-        VectorScale (force, 2.0f / ent->mass, force);
-    }
-    else
-    {
-        VectorClear (ent->forceApplied);
-    }
     
     force[2] += ent->mass * -9.81f;
     
