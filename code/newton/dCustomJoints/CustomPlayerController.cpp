@@ -56,7 +56,7 @@ CustomPlayerController::CustomPlayerController(
 	CalculateLocalMatrix (pinMatrix, m_localMatrix0, m_localMatrix1);
 
 
-	// register the callback for tire integration
+	// register the callback called afte all velocities are calculated
 	NewtonUserJointSetFeedbackCollectorCallback (m_joint, KinematicMotion);
 
 	// calculate the dimensions of the Player internal auxiliary shapes
@@ -110,8 +110,8 @@ CustomPlayerController::CustomPlayerController(
 		dFloat fx;
 		dFloat fz;
 
-		x = dCos (2.0f * 3.1416f * dFloat(i) / dFloat(SENSOR_SHAPE_SEGMENTS));
-		z = dSin (2.0f * 3.1416f * dFloat(i) / dFloat(SENSOR_SHAPE_SEGMENTS));
+		x = dCos (2.0f * 3.14159265f * dFloat(i) / dFloat(SENSOR_SHAPE_SEGMENTS));
+		z = dSin (2.0f * 3.14159265f * dFloat(i) / dFloat(SENSOR_SHAPE_SEGMENTS));
 
 		fx = floorRadios * x;
 		fz = floorRadios * z;
@@ -203,11 +203,11 @@ void CustomPlayerController::SetMaxSlope (dFloat maxSlopeAngleIndRadian)
 {
 //	
 	maxSlopeAngleIndRadian = dAbs(maxSlopeAngleIndRadian);
-	if (maxSlopeAngleIndRadian < 10.0f * 3.1416f / 180.0f) {
-		maxSlopeAngleIndRadian = 10.0f * 3.1416f / 180.0f;
+	if (maxSlopeAngleIndRadian < 10.0f * 3.14159265f / 180.0f) {
+		maxSlopeAngleIndRadian = 10.0f * 3.14159265f / 180.0f;
 	}
-	if (maxSlopeAngleIndRadian > 60.0f * 3.1416f / 180.0f) {
-		maxSlopeAngleIndRadian = 60.0f * 3.1416f / 180.0f;
+	if (maxSlopeAngleIndRadian > 60.0f * 3.14159265f / 180.0f) {
+		maxSlopeAngleIndRadian = 60.0f * 3.14159265f / 180.0f;
 	}
 
 	m_maxSlope = dCos (maxSlopeAngleIndRadian);

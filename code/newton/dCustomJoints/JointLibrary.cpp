@@ -132,17 +132,17 @@ NewtonUserJoint* CustomCreateBlankJoint (int maxDof, const NewtonBody* body0, co
 class CustomUser6DOF: public Custom6DOF  
 {
 	public:
-	CustomUser6DOF (const dMatrix& pinsAndPivoChildFrame, const dMatrix& pinsAndPivoParentFrame, const NewtonBody* child, const NewtonBody* parent = NULL)
-		:Custom6DOF (pinsAndPivoChildFrame, pinsAndPivoParentFrame, child, parent)
+	CustomUser6DOF (const dMatrix& pinsAndPivotChildFrame, const dMatrix& pinsAndPivotParentFrame, const NewtonBody* child, const NewtonBody* parent = NULL)
+		:Custom6DOF (pinsAndPivotChildFrame, pinsAndPivotParentFrame, child, parent)
 	{
 	}
 };
 
 
 // Generic 6 degree of Freedom Joint
-NewtonUserJoint *CreateCustomJoint6DOF (const dFloat* pinsAndPivoChildFrame, const dFloat* pinsAndPivoParentFrame, const NewtonBody* child, const NewtonBody* parent)
+NewtonUserJoint *CreateCustomJoint6DOF (const dFloat* pinsAndPivotChildFrame, const dFloat* pinsAndPivotParentFrame, const NewtonBody* child, const NewtonBody* parent)
 {
-	return (NewtonUserJoint *) new CustomUser6DOF (*(dMatrix*) pinsAndPivoChildFrame, *(dMatrix*) pinsAndPivoParentFrame, child, parent);
+	return (NewtonUserJoint *) new CustomUser6DOF (*(dMatrix*) pinsAndPivotChildFrame, *(dMatrix*) pinsAndPivotParentFrame, child, parent);
 }
 
 
@@ -177,16 +177,16 @@ void CustomJoint6DOF_SetReverseUniversal (NewtonUserJoint* customJoint6DOF, int 
 class CustomUserBallAndSocket: public CustomLimitBallAndSocket  
 {
 public:
-	CustomUserBallAndSocket (const dMatrix& pinsAndPivoChildFrame, const NewtonBody* child, const NewtonBody* parent)
-		:CustomLimitBallAndSocket (pinsAndPivoChildFrame, child, parent)
+	CustomUserBallAndSocket (const dMatrix& pinsAndPivotChildFrame, const NewtonBody* child, const NewtonBody* parent)
+		:CustomLimitBallAndSocket (pinsAndPivotChildFrame, child, parent)
 	{
 	}
 };
 
-// Generic Hinge Joint spin along the first axis on pinsAndPivoChildFrame
-NewtonUserJoint *CreateCustomBallAndSocket (const dFloat* pinsAndPivoChildFrame, const NewtonBody* child, const NewtonBody* parent)
+// Generic Hinge Joint spin along the first axis on pinsAndPivotChildFrame
+NewtonUserJoint *CreateCustomBallAndSocket (const dFloat* pinsAndPivotChildFrame, const NewtonBody* child, const NewtonBody* parent)
 {
-	return (NewtonUserJoint *) new CustomUserBallAndSocket (*(dMatrix*) pinsAndPivoChildFrame, child, parent);
+	return (NewtonUserJoint *) new CustomUserBallAndSocket (*(dMatrix*) pinsAndPivotChildFrame, child, parent);
 }
 
 void BallAndSocketSetConeAngle (NewtonUserJoint* ballJoint, dFloat angle)
@@ -206,8 +206,8 @@ void BallAndSocketSetTwistAngle (NewtonUserJoint* ballJoint, dFloat minAngle, dF
 class CustomUserHinge: public CustomHinge  
 {
 public:
-	CustomUserHinge (const dMatrix& pinsAndPivoChildFrame, const NewtonBody* child, const NewtonBody* parent)
-		:CustomHinge (pinsAndPivoChildFrame, child, parent)
+	CustomUserHinge (const dMatrix& pinsAndPivotChildFrame, const NewtonBody* child, const NewtonBody* parent)
+		:CustomHinge (pinsAndPivotChildFrame, child, parent)
 	{
 	}
 
@@ -244,10 +244,10 @@ public:
 	}
 };
 
-// Generic Hinge Joint spin along the first axis on pinsAndPivoChildFrame
-NewtonUserJoint *CreateCustomHinge (const dFloat* pinsAndPivoChildFrame, const NewtonBody* child, const NewtonBody* parent)
+// Generic Hinge Joint spin along the first axis on pinsAndPivotChildFrame
+NewtonUserJoint *CreateCustomHinge (const dFloat* pinsAndPivotChildFrame, const NewtonBody* child, const NewtonBody* parent)
 {
-	return (NewtonUserJoint *) new CustomUserHinge (*(dMatrix*) pinsAndPivoChildFrame, child, parent);
+	return (NewtonUserJoint *) new CustomUserHinge (*(dMatrix*) pinsAndPivotChildFrame, child, parent);
 }
 
 void HingeEnableLimits(NewtonUserJoint* hingeJoint, int state)
@@ -255,7 +255,7 @@ void HingeEnableLimits(NewtonUserJoint* hingeJoint, int state)
 	((CustomUserHinge*)hingeJoint)->EnableLimits(state ? true : false); 
 }
 
-void HingeSetLimis (NewtonUserJoint* hingeJoint, dFloat minAngle, dFloat maxAngle)
+void HingeSetLimits (NewtonUserJoint* hingeJoint, dFloat minAngle, dFloat maxAngle)
 {
 	((CustomUserHinge*)hingeJoint)->SetLimis (minAngle, maxAngle); 
 }
@@ -281,16 +281,16 @@ dFloat HingeCalculateJointOmega (const NewtonUserJoint* hingeJoint)
 class CustomUserSlider: public CustomSlider  
 {
 public:
-	CustomUserSlider (const dMatrix& pinsAndPivoChildFrame, const NewtonBody* child, const NewtonBody* parent)
-		:CustomSlider (pinsAndPivoChildFrame, child, parent)
+	CustomUserSlider (const dMatrix& pinsAndPivotChildFrame, const NewtonBody* child, const NewtonBody* parent)
+		:CustomSlider (pinsAndPivotChildFrame, child, parent)
 	{
 	}
 };
 
-// Generic Slider Joint spin along the first axis on pinsAndPivoChildFrame
-NewtonUserJoint *CreateCustomSlider (const dFloat* pinsAndPivoChildFrame, const NewtonBody* child, const NewtonBody* parent)
+// Generic Slider Joint spin along the first axis on pinsAndPivotChildFrame
+NewtonUserJoint *CreateCustomSlider (const dFloat* pinsAndPivotChildFrame, const NewtonBody* child, const NewtonBody* parent)
 {
-	return (NewtonUserJoint *) new CustomUserSlider (*(dMatrix*) pinsAndPivoChildFrame, child, parent);
+	return (NewtonUserJoint *) new CustomUserSlider (*(dMatrix*) pinsAndPivotChildFrame, child, parent);
 }
 
 void SliderEnableLimits(NewtonUserJoint* sliderJoint, int state)
@@ -298,7 +298,7 @@ void SliderEnableLimits(NewtonUserJoint* sliderJoint, int state)
 	((CustomUserSlider*)sliderJoint)->EnableLimits(state ? true : false); 
 }
 
-void SliderSetLimis (NewtonUserJoint* sliderJoint, dFloat minAngle, dFloat maxAngle)
+void SliderSetLimits (NewtonUserJoint* sliderJoint, dFloat minAngle, dFloat maxAngle)
 {
 	((CustomUserSlider*)sliderJoint)->SetLimis (minAngle, maxAngle); 
 }
@@ -520,6 +520,16 @@ class CustomUserDGRayCastCar: public CustomDGRayCastCar
 		m_tireTransformCallback = callback;
 	}
 
+//	void InitNormalizeTireLateralForce(int pointsCount, dFloat* const piceSizeStepAxis, dFloat* const normalizedForceValue)
+//	{
+//		m_normalizedLateralForce.InitalizeCurve (pointsCount, piceSizeStepAxis, normalizedForceValue);
+//	}
+//	void InitNormalizeTireLongitudinalForce(int pointsCount, dFloat* const piceSizeStepAxis, dFloat* const normalizedForceValue)
+//	{
+//		m_normalizedLongitudinalForce.InitalizeCurve (pointsCount, piceSizeStepAxis, normalizedForceValue);
+//	}
+
+
 	static void CarTransformCallback (const NewtonBody* body, const dFloat* matrix, int threadIndex)
 	{
 		NewtonJoint* joint;
@@ -573,6 +583,16 @@ void* DGRaycastVehicleGetTiresUserData(NewtonUserJoint *car, int tireIndex)
 void DGRaycastVehicleGetTireMatrix(NewtonUserJoint *car, int tire, dFloat* tireMatrix)
 {
 	(*(dMatrix*)tireMatrix) = ((CustomUserDGRayCastCar*)car)->CalculateTireMatrix(tire);
+}
+
+void DGRaycastVehicleInitNormalizeTireLateralForce(NewtonUserJoint *car, int pointsCount, dFloat* const piceSizeStepAxis, dFloat* const normalizedForceValue)
+{
+	((CustomUserDGRayCastCar*)car)->InitNormalizeTireLateralForce (pointsCount, piceSizeStepAxis, normalizedForceValue);
+}
+
+void DGRaycastVehicleInitNormalizeTireLongitudinalForce(NewtonUserJoint *car, int pointsCount, dFloat* const piceSizeStepAxis, dFloat* const normalizedForceValue)
+{
+	((CustomUserDGRayCastCar*)car)->InitNormalizeTireLongitudinalForce (pointsCount, piceSizeStepAxis, normalizedForceValue);
 }
 
 

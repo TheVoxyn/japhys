@@ -9,68 +9,59 @@
 * freely
 */
 
-#include <dContainersStdAfx.h>
+#include "dContainersStdAfx.h"
 #include "dTree.h"
 
 
-dRedBackNode *dRedBackNode::Minimum () const
+dRedBackNode* dRedBackNode::Minimum () const
 {
-	dRedBackNode *ptr;
-
-	for (ptr = (dRedBackNode *)this; ptr->m_left; ptr = ptr->m_left);
+	dRedBackNode* ptr = (dRedBackNode* )this;
+	for (; ptr->m_left; ptr = ptr->m_left);
 	return ptr;
 }
 
-dRedBackNode *dRedBackNode::Maximum () const
+dRedBackNode* dRedBackNode::Maximum () const
 {
-	dRedBackNode *ptr;
-
-	for (ptr = (dRedBackNode *)this; ptr->m_right; ptr = ptr->m_right);
+	dRedBackNode* ptr = (dRedBackNode* )this;
+	for (; ptr->m_right; ptr = ptr->m_right);
 	return ptr;
 }
 
 
-dRedBackNode *dRedBackNode::Prev () const
+dRedBackNode* dRedBackNode::Prev () const
 {
-	dRedBackNode *me;
-	dRedBackNode *ptr;
-
 	if (m_left) {
 		return m_left->Maximum ();
 	}
 
-	me = (dRedBackNode *)this;
-	for (ptr = m_parent; ptr && me == ptr->m_left; ptr = ptr->m_parent) {
+	dRedBackNode* me = (dRedBackNode* )this;
+	dRedBackNode* ptr = m_parent;
+	for (; ptr && me == ptr->m_left; ptr = ptr->m_parent) {
 		me = ptr;
 	}
 	return ptr;
 
 }
 
-dRedBackNode *dRedBackNode::Next () const
+dRedBackNode* dRedBackNode::Next () const
 {
-	dRedBackNode *ptr;
-	dRedBackNode *node;
-
 	if (m_right) {
 		return m_right->Minimum ();
 	}
 
-	node = (dRedBackNode *)this;
-	for (ptr = m_parent; ptr && node == ptr->m_right; ptr = ptr->m_parent) {
+	dRedBackNode* node = (dRedBackNode* )this;
+	dRedBackNode* ptr = m_parent;
+	for (; ptr && node == ptr->m_right; ptr = ptr->m_parent) {
 		node = ptr;
 	}
 	return ptr;
 }
 
 // rotate node me to left 
-void dRedBackNode::RotateLeft(dRedBackNode **head) 
+void dRedBackNode::RotateLeft(dRedBackNode** const head) 
 {
-	dRedBackNode *me;
-	dRedBackNode *child;
-
-	me = this;
-	child = me->m_right;
+	dRedBackNode* const me = this;
+	dRedBackNode* const child = me->m_right;
 	
 	//establish me->m_right link 
 	me->m_right = child->m_left;
@@ -101,13 +92,10 @@ void dRedBackNode::RotateLeft(dRedBackNode **head)
 
 
 // rotate node me to right  *
-void dRedBackNode::RotateRight(dRedBackNode **head) 
+void dRedBackNode::RotateRight(dRedBackNode** const head) 
 {
-	dRedBackNode *me;
-	dRedBackNode *child;
-
-	me = this;
-	child = me->m_left;
+	dRedBackNode* const me = this;
+	dRedBackNode* const child = me->m_left;
 
 	// establish me->m_left link 
 	me->m_left = child->m_right;
@@ -138,17 +126,14 @@ void dRedBackNode::RotateRight(dRedBackNode **head)
 
 
 // maintain Red-Black tree balance after inserting node ptr   
-void dRedBackNode::InsertFixup(dRedBackNode **head) 
+void dRedBackNode::InsertFixup(dRedBackNode** const head) 
 {
-	dRedBackNode *ptr;
-	dRedBackNode *tmp;
-
-	ptr = this;
+	dRedBackNode* ptr = this;
 	// check Red-Black properties 
 	while ((ptr != *head) && (ptr->m_parent->GetColor() == RED)) {
 		// we have a violation 
 		if (ptr->m_parent == ptr->m_parent->m_parent->m_left) {
-			tmp = ptr->m_parent->m_parent->m_right;
+			dRedBackNode* const tmp = ptr->m_parent->m_parent->m_right;
 			if (tmp && (tmp->GetColor() == RED)) {
 				// uncle is RED 
 				ptr->m_parent->SetColor(BLACK);
@@ -172,7 +157,7 @@ void dRedBackNode::InsertFixup(dRedBackNode **head)
 		} else {
 			//_ASSERTE (ptr->m_parent == ptr->m_parent->m_parent->m_right);
 			// mirror image of above code 
-			tmp = ptr->m_parent->m_parent->m_left;
+			dRedBackNode* const tmp = ptr->m_parent->m_parent->m_left;
 			if (tmp && (tmp->GetColor() == RED)) {
 				//uncle is RED 
 				ptr->m_parent->SetColor(BLACK);
@@ -198,20 +183,16 @@ void dRedBackNode::InsertFixup(dRedBackNode **head)
 
 
 //maintain Red-Black tree balance after deleting node x 
-void dRedBackNode::RemoveFixup (
-	dRedBackNode *node, 
-	dRedBackNode **head) 
+void dRedBackNode::RemoveFixup (dRedBackNode* const me, dRedBackNode** const head) 
 {
-	dRedBackNode *ptr;
-	dRedBackNode *tmp; 
-
-	ptr = this;
+	dRedBackNode* ptr = this;
+	dRedBackNode* node = me;
 	while ((node != *head) && (!node || node->GetColor() == BLACK)) {
 		if (node == ptr->m_left) {
 			if (!ptr) {
 				return;
 			}
-			tmp = ptr->m_right;
+			dRedBackNode* tmp = ptr->m_right;
 			if (!tmp) {
 				return;
 			}
@@ -253,7 +234,7 @@ void dRedBackNode::RemoveFixup (
 		  	if (!ptr) {
 				return;
 		  	}
-			tmp = ptr->m_left;
+			dRedBackNode* tmp = ptr->m_left;
 			if (!tmp) {
 				return;
 			}
@@ -298,34 +279,30 @@ void dRedBackNode::RemoveFixup (
 	}
 }
 
-
-void dRedBackNode::Remove (dRedBackNode **head) 
+void dRedBackNode::Unlink (dRedBackNode** const head)
 {
 	bool oldColor;
-	dRedBackNode *node;
-	dRedBackNode *child;
-	dRedBackNode *endNode;
-	dRedBackNode *endNodeParent;
 
-	node = this;
-//	node->Kill();
+	//dRedBackNode* endNodeParent;
+
+	dRedBackNode* const node = this;
 	node->SetInTreeFlag(false);
 
 	if (!node->m_left || !node->m_right) {
 		// y has a NULL node as a child 
-		endNode = node;
-	
+		dRedBackNode* const endNode = node;
+
 		// x is y's only child 
-		child = endNode->m_right;
+		dRedBackNode* child = endNode->m_right;
 		if (endNode->m_left) {
 			child = endNode->m_left;
 		}
-		
+
 		// remove y from the parent chain 
 		if (child) {
 			child->m_parent = endNode->m_parent;
 		}
-		
+
 		if (endNode->m_parent)	{
 			if (endNode == endNode->m_parent->m_left) {
 				endNode->m_parent->m_left = child;
@@ -335,33 +312,33 @@ void dRedBackNode::Remove (dRedBackNode **head)
 		} else {
 			*head = child;
 		}
-		
+
 		if (endNode->GetColor() == BLACK) {
 			endNode->m_parent->RemoveFixup (child, head);
 		}
-		delete endNode;
-	
+
+
 	} else {
 
-	  	// find tree successor with a NULL node as a child 
-		endNode = node->m_right;
+		// find tree successor with a NULL node as a child 
+		dRedBackNode* endNode = node->m_right;
 		while (endNode->m_left != NULL) {
 			endNode = endNode->m_left;
 		}
-		
-//		_ASSERTE (endNode);
-//		_ASSERTE (endNode->m_parent);
-//		_ASSERTE (!endNode->m_left);
-		
+
+		//		_ASSERTE (endNode);
+		//		_ASSERTE (endNode->m_parent);
+		//		_ASSERTE (!endNode->m_left);
+
 		// x is y's only child 
-		child = endNode->m_right;
-		
-//		_ASSERTE ((endNode != node->m_right) || !child || (child->m_parent == endNode));
+		dRedBackNode* const child = endNode->m_right;
+
+		//		_ASSERTE ((endNode != node->m_right) || !child || (child->m_parent == endNode));
 
 		endNode->m_left = node->m_left;
 		node->m_left->m_parent = endNode;
-		
-		endNodeParent = endNode;
+
+		dRedBackNode* endNodeParent = endNode;
 		if (endNode	!= node->m_right) {
 			if (child) {
 				child->m_parent = endNode->m_parent;
@@ -371,7 +348,7 @@ void dRedBackNode::Remove (dRedBackNode **head)
 			node->m_right->m_parent = endNode;
 			endNodeParent = endNode->m_parent;
 		}
-		
+
 
 		if (node == *head) {
 			*head = endNode;
@@ -381,16 +358,21 @@ void dRedBackNode::Remove (dRedBackNode **head)
 			node->m_parent->m_right = endNode;
 		}
 		endNode->m_parent = node->m_parent;
-		
+
 		oldColor = endNode->GetColor();
 		endNode->SetColor (node->GetColor());
 		node->SetColor	(oldColor);
-		
+
 		if (oldColor == BLACK) {
-		  	endNodeParent->RemoveFixup (child, head);
+			endNodeParent->RemoveFixup (child, head);
 		}
-		delete node;
 	}
+}
+
+void dRedBackNode::Remove (dRedBackNode** const head) 
+{
+	Unlink (head);
+	delete this;
 }
 
 
@@ -408,7 +390,7 @@ void dRedBackNode::RemoveAllLow ()
 
 void dRedBackNode::RemoveAll ()
 {
-	dRedBackNode *root;
+	dRedBackNode* root;
 	for (root = this; root->m_parent; root = root->m_parent);
 	root->RemoveAllLow();
 }

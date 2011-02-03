@@ -9,7 +9,7 @@
 * freely
 */
 
-#include <dContainersStdAfx.h>
+#include "dContainersStdAfx.h"
 #include "dCRC.h"
 
 
@@ -84,24 +84,31 @@ static unsigned randBits[] =
 
 
 // calculate a 32 bit crc of a string
-unsigned dCRC (const char *name)
+unsigned dCRC (const char* const name, unsigned crc)
 {
-	unsigned c;
-	unsigned crc;
-	unsigned char *ptr;
-	unsigned val;
-	
 	if (!name) {
 		return 0;
 	}
 
-	crc = 0;
-	for (ptr = (unsigned char*)name; *ptr; ptr ++) {
-		c = *ptr;
-		val = randBits[((crc >> 24) ^ c) & 0xff];
+	for (unsigned char *ptr = (unsigned char*)name; *ptr; ptr ++) {
+		unsigned c = *ptr;
+		unsigned val = randBits[((crc >> 24) ^ c) & 0xff];
 		crc = (crc << 8) ^ val;
 	}
 	return crc;
+}
+
+
+unsigned dCRC (const void* const buffer, int size, unsigned crcAcc)
+{
+	unsigned char *ptr = (unsigned char*)buffer;
+
+	for (int i = 0; i < size; i ++) {
+		unsigned c = ptr[i];
+		unsigned val = randBits[((crcAcc >> 24) ^ c) & 0xff];
+		crcAcc = (crcAcc << 8) ^ val;
+	}
+	return crcAcc;
 }
 
 

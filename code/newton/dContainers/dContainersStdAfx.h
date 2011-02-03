@@ -19,9 +19,13 @@
 
 #include <stdlib.h>
 #include <string.h>
+//#include <windows.h>
 
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 
+#if (defined (_LINUX_VER) || defined (_MAC_VER))
+#define _ASSERTE(x)
+#endif
 
 
 

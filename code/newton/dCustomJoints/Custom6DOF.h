@@ -23,7 +23,7 @@
 class JOINTLIBRARY_API Custom6DOF: public NewtonCustomJoint  
 {
 	public:
-	Custom6DOF (const dMatrix& pinsAndPivoChildFrame, const dMatrix& pinsAndPivoParentFrame, const NewtonBody* child, const NewtonBody* parent = NULL);
+	Custom6DOF (const dMatrix& pinsAndPivotChildFrame, const dMatrix& pinsAndPivotParentFrame, const NewtonBody* child, const NewtonBody* parent = NULL);
 	virtual ~Custom6DOF();
 
 	void SetLinearLimits (const dVector& minLinearLimits, const dVector& maxLinearLimits);

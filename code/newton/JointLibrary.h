@@ -75,7 +75,7 @@ extern "C" {
 	JOINTLIBRARY_API void CustomKinematicControllerGetTargetMatrix (const NewtonUserJoint *pick, dFloat* matrix);
 
 	// Generic 6 degree of Freedom Joint
-	JOINTLIBRARY_API NewtonUserJoint *CreateCustomJoint6DOF (const dFloat* pinsAndPivoChildFrame, const dFloat* pinsAndPivoParentFrame, const NewtonBody* child, const NewtonBody* parent);
+	JOINTLIBRARY_API NewtonUserJoint *CreateCustomJoint6DOF (const dFloat* pinsAndPivotChildFrame, const dFloat* pinsAndPivotParentFrame, const NewtonBody* child, const NewtonBody* parent);
 	JOINTLIBRARY_API void CustomJoint6DOF_SetLinearLimits (NewtonUserJoint* customJoint6DOF, const dFloat* minLinearLimits, const dFloat* maxLinearLimits);
 	JOINTLIBRARY_API void CustomJoint6DOF_SetAngularLimits (NewtonUserJoint* customJoint6DOF, const dFloat* minAngularLimits, const dFloat* maxAngularLimits);
 	JOINTLIBRARY_API void CustomJoint6DOF_GetLinearLimits (NewtonUserJoint* customJoint6DOF, dFloat* minLinearLimits, dFloat* maxLinearLimits);
@@ -84,22 +84,22 @@ extern "C" {
 
 
 	// Interface for a custom BallAndSocket joint with Limits
-	JOINTLIBRARY_API NewtonUserJoint *CreateCustomBallAndSocket (const dFloat* pinsAndPivoChildFrame, const NewtonBody* child, const NewtonBody* parent);
+	JOINTLIBRARY_API NewtonUserJoint *CreateCustomBallAndSocket (const dFloat* pinsAndPivotChildFrame, const NewtonBody* child, const NewtonBody* parent);
 	JOINTLIBRARY_API void BallAndSocketSetConeAngle (NewtonUserJoint* ballJoint, dFloat angle);
 	JOINTLIBRARY_API void BallAndSocketSetTwistAngle (NewtonUserJoint* ballJoint, dFloat minAngle, dFloat maxAngle);
 
 	// Interface for a custom Hinge joint with Limits
-	JOINTLIBRARY_API NewtonUserJoint *CreateCustomHinge (const dFloat* pinsAndPivoChildFrame, const NewtonBody* child, const NewtonBody* parent);
+	JOINTLIBRARY_API NewtonUserJoint *CreateCustomHinge (const dFloat* pinsAndPivotChildFrame, const NewtonBody* child, const NewtonBody* parent);
 	JOINTLIBRARY_API void HingeEnableLimits(NewtonUserJoint* hingeJoint, int state);
-	JOINTLIBRARY_API void HingeSetLimis (NewtonUserJoint* hingeJoint, dFloat minAngle, dFloat maxAngle);
+	JOINTLIBRARY_API void HingeSetLimits (NewtonUserJoint* hingeJoint, dFloat minAngle, dFloat maxAngle);
 	JOINTLIBRARY_API dFloat HingeGetJointAngle (const NewtonUserJoint* hingeJoint);
 	JOINTLIBRARY_API void HingeGetPinAxis (const NewtonUserJoint* hingeJoint, dFloat* pin);
 	JOINTLIBRARY_API dFloat HingeCalculateJointOmega (const NewtonUserJoint* hingeJoint);
 
 	// Interface for a custom Slider joint with Limits
-	JOINTLIBRARY_API NewtonUserJoint *CreateCustomSlider (const dFloat* pinsAndPivoChildFrame, const NewtonBody* child, const NewtonBody* parent);
+	JOINTLIBRARY_API NewtonUserJoint *CreateCustomSlider (const dFloat* pinsAndPivotChildFrame, const NewtonBody* child, const NewtonBody* parent);
 	JOINTLIBRARY_API void SliderEnableLimits(NewtonUserJoint* sliderJoint, int state);
-	JOINTLIBRARY_API void SliderSetLimis (NewtonUserJoint* sliderJoint, dFloat mindist, dFloat maxdist);
+	JOINTLIBRARY_API void SliderSetLimits (NewtonUserJoint* sliderJoint, dFloat mindist, dFloat maxdist);
 
 
 
@@ -141,6 +141,11 @@ extern "C" {
 	JOINTLIBRARY_API int DGRaycastVehicleGetTiresCount(NewtonUserJoint *car);
 	JOINTLIBRARY_API void* DGRaycastVehicleGetTiresUserData(NewtonUserJoint *car, int tireIndex);
     JOINTLIBRARY_API void DGRaycastVehicleGetTireMatrix(NewtonUserJoint *car, int tireIndex, dFloat* tireMatrix);
+
+	JOINTLIBRARY_API void DGRaycastVehicleInitNormalizeTireLateralForce(NewtonUserJoint *car, int pointsCount, dFloat* const piceSizeStepAxis, dFloat* const normalizedForceValue);
+	JOINTLIBRARY_API void DGRaycastVehicleInitNormalizeTireLongitudinalForce(NewtonUserJoint *car, int pointsCount, dFloat* const piceSizeStepAxis, dFloat* const normalizedForceValue);
+
+
 //	JOINTLIBRARY_API void DGRayCarGetChassisMatrixLocal(NewtonUserJoint *car, dFloat* chassisMatrix);
 //	JOINTLIBRARY_API void DGRayCarTireMatrix(NewtonUserJoint *car, int tire, dFloat* tireMatrix);
 //	JOINTLIBRARY_API void DGRayCarSuspensionMatrix(NewtonUserJoint *car, int tire, dFloat param, dFloat* SuspensionMatrix);	

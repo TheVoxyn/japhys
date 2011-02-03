@@ -520,11 +520,24 @@ int CustomMultiBodyVehicle::AddSingleSuspensionTire (
 
 	world = NewtonBodyGetWorld(GetBody0());
 
+	// calculate the tire local base pose matrix
+	dMatrix tireMatrix;
+	tireMatrix.m_front = m_localFrame.m_right;
+	tireMatrix.m_up = m_localFrame.m_up;
+	tireMatrix.m_right = tireMatrix.m_front * tireMatrix.m_up;
+	tireMatrix.m_posit = localPosition;
+	NewtonBodyGetMatrix(GetBody0(), &carMatrix[0][0]);
+	tireMatrix = tireMatrix * carMatrix;
+
+
 	// create the tire RogidBody 
 	collision = NewtonCreateChamferCylinder(world, radius, width, 0, NULL);
 
 	//create the rigid body
-	tire = NewtonCreateBody (world, collision);
+	tire = NewtonCreateBody (world, collision, &tireMatrix[0][0]);
+
+	// set the matrix for both the rigid body and the graphic body
+	//	NewtonBodySetMatrix (tire, &tireMatrix[0][0]);
 
 	// release the collision
 	NewtonReleaseCollision (world, collision);	
@@ -553,17 +566,6 @@ int CustomMultiBodyVehicle::AddSingleSuspensionTire (
 	// set the mass matrix
 	NewtonBodySetMassMatrix (tire, mass, Ixx, Iyy, Izz);
 
-	// calculate the tire local base pose matrix
-	dMatrix tireMatrix;
-	tireMatrix.m_front = m_localFrame.m_right;
-	tireMatrix.m_up = m_localFrame.m_up;
-	tireMatrix.m_right = tireMatrix.m_front * tireMatrix.m_up;
-	tireMatrix.m_posit = localPosition;
-	NewtonBodyGetMatrix(GetBody0(), &carMatrix[0][0]);
-	tireMatrix = tireMatrix * carMatrix;
-
-	// set the matrix for both the rigid body and the graphic body
-	NewtonBodySetMatrix (tire, &tireMatrix[0][0]);
 
 	// add a single tire
 	m_tires[m_tiresCount] = new CustomMultiBodyVehicleTire (GetBody0(), tire, suspensionLength, springConst, springDamper, radius);

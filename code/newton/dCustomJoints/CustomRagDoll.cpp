@@ -76,7 +76,7 @@ int CustomRagDoll::AddBone (
 	CustomRagDollLimbJoint *joint;
 
 	// create the rigid body that will make this bone
-	bone = NewtonCreateBody (world, boneCollisionShape);
+	bone = NewtonCreateBody (world, boneCollisionShape, &boneMatrix[0][0]);
 
 	// calculate the moment of inertia and the relative center of mass of the solid
 	dVector origin(0.0f, 0.0f, 0.0f, 1.0f);
@@ -95,7 +95,7 @@ int CustomRagDoll::AddBone (
 	NewtonBodySetMassMatrix (bone, mass, Ixx, Iyy, Izz);
 
 	// set the body matrix
-	NewtonBodySetMatrix (bone, &boneMatrix[0][0]);
+//	NewtonBodySetMatrix (bone, &boneMatrix[0][0]);
 
 	// save the user data with the bone body (usually the visual geometry)
 	NewtonBodySetUserData(bone, userData);
