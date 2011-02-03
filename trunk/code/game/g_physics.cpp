@@ -189,15 +189,7 @@ static void G_PhysicsEntityAddCapsule ( gentity_t* ent, NewtonCollision** collis
     }
     
     BG_QuakeToSIUnits (size, size);
-    
-    /*dMatrix offsetMatrix (
-        dVector (0.0f, 1.0f, 0.0, 0.0f),
-        dVector (0.0f, 0.0f, 1.0f, 0.0f),
-        dVector (1.0f, 0.0f, 0.0f, 0.0f),
-        dVector (0.0f, 0.0f, 0.0f, 1.0f)
-    );*/
-    
-    *collision = NewtonCreateCapsule (bg_physicsWorld, size[0] / 4.0f, size[2], ent->s.number, NULL/*&offsetMatrix[0][0]*/);
+    *collision = NewtonCreateCapsule (bg_physicsWorld, size[0] / 4.0f, size[2], ent->s.number, NULL);
 }
 
 static void G_PhysicsEntityAddCuboid ( gentity_t* ent, NewtonCollision** collision, qboolean reduce = qtrue )
@@ -220,12 +212,12 @@ static void G_PhysicsEntityDie ( const NewtonBody* )
     // do nothing
 }
 
-static void G_PhysicsEntityAdd ( gentity_t* ent )
+static void G_PhysicsEntityAdd ( gentity_t* ent, int shape )
 {
     NewtonCollision* collision = NULL;
     NewtonBody* body = NULL;
 
-    switch ( ent->genericValue1 )
+    switch ( shape )
     {
         case CUBOID:
             G_PhysicsEntityAddCuboid (ent, &collision);
@@ -233,6 +225,10 @@ static void G_PhysicsEntityAdd ( gentity_t* ent )
         
         case SPHERE:
             G_PhysicsEntityAddSphere (ent, &collision);
+        break;
+        
+        case CAPSULE:
+            G_PhysicsEntityAddCapsule (ent, &collision, qfalse);
         break;
         
         /*case COMPOSITE:
@@ -246,7 +242,9 @@ static void G_PhysicsEntityAdd ( gentity_t* ent )
         break;
     }
     
-    body = NewtonCreateBody (bg_physicsWorld, collision);
+    dMatrix matrix (GetIdentityMatrix());
+    BG_QuakeToSIUnits2 (ent->s.origin, matrix.m_posit);
+    body = NewtonCreateBody (bg_physicsWorld, collision, &matrix[0][0]);
     ent->bodyVolume = NewtonConvexCollisionCalculateVolume (collision);
     NewtonReleaseCollision (bg_physicsWorld, collision);
     
@@ -264,11 +262,11 @@ static void G_PhysicsEntityAdd ( gentity_t* ent )
     VectorScale (inertia, ent->mass, inertia);
     
     NewtonBodySetMassMatrix (body, ent->mass, inertia[0], inertia[1], inertia[2]);
-    
-    dMatrix matrix (GetIdentityMatrix());
-    BG_QuakeToSIUnits2 (ent->s.origin, matrix.m_posit);
-    
-    NewtonBodySetMatrix (body, &matrix[0][0]);
+}
+
+void G_PhysicsAddPlayer ( gentity_t *player )
+{
+    G_PhysicsEntityAdd (player, CAPSULE);
 }
 
 void G_AddStaticEntity ( gentity_t* ent, entityType_t entityType )
@@ -282,10 +280,6 @@ void G_AddStaticEntity ( gentity_t* ent, entityType_t entityType )
     
     switch ( entityType )
     {
-        case ET_PLAYER:
-            G_PhysicsEntityAddCapsule (ent, &collision, qfalse);
-        break;
-        
         case ET_MOVER:
             G_PhysicsEntityAddCuboid (ent, &collision);
         break;
@@ -298,15 +292,13 @@ void G_AddStaticEntity ( gentity_t* ent, entityType_t entityType )
     StaticBody sbody;
     
     sbody.ent = ent;
-    sbody.body = NewtonCreateBody (bg_physicsWorld, collision);
-    NewtonReleaseCollision (bg_physicsWorld, collision);
-    
-    NewtonBodySetDestructorCallback (sbody.body, G_PhysicsEntityDie);
     
     dMatrix matrix (GetIdentityMatrix());
     BG_QuakeToSIUnits2 (ent->r.currentOrigin, matrix.m_posit);
+    sbody.body = NewtonCreateBody (bg_physicsWorld, collision, &matrix[0][0]);
+    NewtonReleaseCollision (bg_physicsWorld, collision);
     
-    NewtonBodySetMatrix (sbody.body, &matrix[0][0]);
+    NewtonBodySetDestructorCallback (sbody.body, G_PhysicsEntityDie);
     
     staticEnts[ent->s.number] = sbody;
 }
@@ -364,9 +356,11 @@ void SP_func_physics ( gentity_t* ent )
     VectorCopy (ent->s.angles, ent->r.currentAngles);
 	
 	G_SpawnFloat ("mass", "500.0", &ent->mass);
-	G_SpawnInt ("shape", "0", &ent->genericValue1);
+	
+	int shape;
+	G_SpawnInt ("shape", "0", &shape);
     
-    G_PhysicsEntityAdd (ent);
+    G_PhysicsEntityAdd (ent, shape);
 }
 
 void Cmd_SpawnPhysicsEntity ( gentity_t *ent )

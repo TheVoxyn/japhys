@@ -10,8 +10,9 @@
 #define NEWTON_H__736495_6495_076__INCLUDED_
 
 
+
 #define NEWTON_MAJOR_VERSION 2 
-#define NEWTON_MINOR_VERSION 15 
+#define NEWTON_MINOR_VERSION 30 
 
 // force all not visual studio platform to be in library form
 #ifndef _MSC_VER
@@ -19,6 +20,7 @@
 		#define _NEWTON_USE_LIB
 	#endif
 #endif
+
 
 #ifdef _NEWTON_USE_LIB
 	#define NEWTON_API
@@ -30,7 +32,7 @@
 	#endif
 #endif
 
-//#define __USE_DOUBLE_PRECISION__
+
 #ifdef __USE_DOUBLE_PRECISION__
 	#define dFloat double
 #else
@@ -270,7 +272,8 @@ extern "C" {
 														   const dFloat** vertexArray, int* vertexCount, int* vertexStrideInBytes, 
 		                                                   const int* indexList, int maxIndexCount, const int* userDataList);
 
-	typedef dFloat (*NewtonCollisionTreeRayCastCallback) (dFloat interception, dFloat* normal, int faceId, void* usedData);
+	typedef dFloat (*NewtonCollisionTreeRayCastCallback) (const NewtonBody* const body, const NewtonCollision* const treeCollision, dFloat interception, dFloat* normal, int faceId, void* usedData);
+	typedef dFloat (*NewtonHeightFieldRayCastCallback) (const NewtonBody* const body, const NewtonCollision* const heightFieldCollision, dFloat interception, int row, int col, dFloat* normal, int faceId, void* usedData);
 
 	
 	// collision tree call back (obsoleted no recommended)
@@ -321,6 +324,9 @@ extern "C" {
 	// world control functions
 	//
 	// **********************************************************************************************
+	NEWTON_API int NewtonWorldGetVersion ();
+	NEWTON_API int NewtonWorldFloatSize ();
+
 	NEWTON_API int NewtonGetMemoryUsed ();
 	NEWTON_API void NewtonSetMemorySystem (NewtonAllocMemory malloc, NewtonFreeMemory mfree);
 
@@ -340,12 +346,15 @@ extern "C" {
 
 	NEWTON_API void NewtonSetPerformanceClock (const NewtonWorld* newtonWorld, NewtonGetTicksCountCallback callback);
 	NEWTON_API unsigned NewtonReadPerformanceTicks (const NewtonWorld* newtonWorld, unsigned performanceEntry);
+	NEWTON_API unsigned NewtonReadThreadPerformanceTicks (const NewtonWorld* newtonWorld, unsigned threadIndex);
+
 
 	
 	NEWTON_API void NewtonWorldCriticalSectionLock (const NewtonWorld* newtonWorld);
 	NEWTON_API void NewtonWorldCriticalSectionUnlock (const NewtonWorld* newtonWorld);
 	NEWTON_API void NewtonSetThreadsCount (const NewtonWorld* newtonWorld, int threads);
 	NEWTON_API int NewtonGetThreadsCount(const NewtonWorld* newtonWorld);
+	NEWTON_API int NewtonGetMaxThreadsCount(const NewtonWorld* newtonWorld);
 
 	NEWTON_API void NewtonSetFrictionModel (const NewtonWorld* newtonWorld, int model);
 	NEWTON_API void NewtonSetMinimumFrameRate (const NewtonWorld* newtonWorld, dFloat frameRate);
@@ -360,7 +369,7 @@ extern "C" {
 	NEWTON_API void NewtonWorldForEachJointDo (const NewtonWorld* newtonWorld, NewtonJointIterator callback, void* userData);
 	NEWTON_API void NewtonWorldForEachBodyInAABBDo (const NewtonWorld* newtonWorld, const dFloat* p0, const dFloat* p1, NewtonBodyIterator callback, void* userData);
 
-	NEWTON_API int NewtonWorldGetVersion (const NewtonWorld* newtonWorld);
+	
 	NEWTON_API void NewtonWorldSetUserData (const NewtonWorld* newtonWorld, void* userData);
 	NEWTON_API void* NewtonWorldGetUserData (const NewtonWorld* newtonWorld);
 	NEWTON_API void NewtonWorldSetDestructorCallBack (const NewtonWorld* newtonWorld, NewtonDestroyWorld destructor);
@@ -504,7 +513,8 @@ extern "C" {
 	//
 	// **********************************************************************************************
 	NEWTON_API NewtonCollision* NewtonCreateCompoundCollision (const NewtonWorld* newtonWorld, int count, NewtonCollision* const collisionPrimitiveArray[], int shapeID);
-	NEWTON_API NewtonCollision* NewtonCreateCompoundCollisionFromMesh (const NewtonWorld* newtonWorld, const NewtonMesh* mesh, dFloat concavity, int maxShapeCount, int shapeID);
+	//NEWTON_API NewtonCollision* NewtonCreateCompoundCollisionFromMesh (const NewtonWorld* newtonWorld, const NewtonMesh* mesh, dFloat concavity, int shapeID, int subShapeID);
+	NEWTON_API NewtonCollision* NewtonCreateCompoundCollisionFromMesh(const NewtonWorld* newtonWorld, const NewtonMesh* mesh, int maxSubShapesCount, int shapeID, int subShapeID);
 
 	// **********************************************************************************************
 	//
@@ -519,7 +529,7 @@ extern "C" {
 	NEWTON_API NewtonCollision* NewtonCreateCompoundBreakable (const NewtonWorld* newtonWorld, int meshCount, 
 															   const NewtonMesh* const solids[], const int* const shapeIDArray, 
 															   const dFloat* const densities, const int* const internalFaceMaterial, 
-															   int shapeID, int debriID, dFloat debrieSeapasationGap);
+															   int shapeID, int debriID, dFloat debriSeparationGap);
 
 
 	NEWTON_API void NewtonCompoundBreakableResetAnchoredPieces (const NewtonCollision* compoundBreakable);
@@ -583,6 +593,8 @@ extern "C" {
 	NEWTON_API NewtonCollision* NewtonCreateHeightFieldCollision (const NewtonWorld* newtonWorld, int width, int height, int gridsDiagonals,
 																  unsigned short* elevationMap, char* attributeMap,
 																  dFloat horizontalScale, dFloat verticalScale, int shapeID);
+	NEWTON_API void NewtonHeightFieldSetUserRayCastCallback (const NewtonCollision* treeCollision, NewtonHeightFieldRayCastCallback rayHitCallback);
+
 	
 	NEWTON_API NewtonCollision* NewtonCreateTreeCollision (const NewtonWorld* newtonWorld, int shapeID);
 	NEWTON_API void NewtonTreeCollisionSetUserRayCastCallback (const NewtonCollision* treeCollision, NewtonCollisionTreeRayCastCallback rayHitCallback);
@@ -640,7 +652,7 @@ extern "C" {
 	// body manipulation functions
 	//
 	// **********************************************************************************************
-	NEWTON_API NewtonBody* NewtonCreateBody (const NewtonWorld* newtonWorld, const NewtonCollision* collision);
+	NEWTON_API NewtonBody* NewtonCreateBody (const NewtonWorld* newtonWorld, const NewtonCollision* collision, const dFloat* matrix);
 	NEWTON_API void  NewtonDestroyBody(const NewtonWorld* newtonWorld, const NewtonBody* body);
 
 	NEWTON_API void  NewtonBodyAddForce (const NewtonBody* body, const dFloat* force);
@@ -880,7 +892,9 @@ extern "C" {
 	//
 	// **********************************************************************************************
 	NEWTON_API NewtonMesh* NewtonMeshCreate(const NewtonWorld* world);
+	NEWTON_API NewtonMesh* NewtonMeshCreateFromMesh(const NewtonMesh* mesh);
 	NEWTON_API NewtonMesh* NewtonMeshCreateFromCollision(const NewtonCollision* collision);
+	NEWTON_API NewtonMesh* NewtonMeshConvexHull (const NewtonWorld* world, int count, const dFloat* vertexCloud, int strideInBytes, dFloat tolerance);
 	NEWTON_API NewtonMesh* NewtonMeshCreatePlane (const NewtonWorld* world, const dFloat* locationMatrix, dFloat witdth, dFloat breadth, int material, const dFloat* textureMatrix0, const dFloat* textureMatrix1);
 	
 	NEWTON_API void NewtonMeshDestroy(const NewtonMesh*mesh);
@@ -893,6 +907,9 @@ extern "C" {
 	NEWTON_API void NewtonMeshApplyCylindricalMapping(const NewtonMesh* mesh, int cylinderMaterial, int capMaterial);
 	
 	NEWTON_API int NewtonMeshIsOpenMesh (const NewtonMesh* mesh);
+	NEWTON_API void NewtonMeshFixTJoints (const NewtonMesh* mesh);
+
+
 	NEWTON_API void NewtonMeshPolygonize (const NewtonMesh* mesh);
 	NEWTON_API void NewtonMeshTriangulate (const NewtonMesh* mesh);
 	NEWTON_API NewtonMesh* NewtonMeshUnion (const NewtonMesh* mesh, const NewtonMesh* clipper, const dFloat* clipperMatrix);
@@ -900,37 +917,84 @@ extern "C" {
 	NEWTON_API NewtonMesh* NewtonMeshIntersection (const NewtonMesh* mesh, const NewtonMesh* clipper, const dFloat* clipperMatrix);
 	NEWTON_API void NewtonMeshClip (const NewtonMesh* mesh, const NewtonMesh* clipper, const dFloat* clipperMatrix, NewtonMesh** topMesh, NewtonMesh** bottomMesh);
 
-	NEWTON_API void NewtonMeshBeginFace(const NewtonMesh *mesh);
-	NEWTON_API void NewtonMeshAddFace(const NewtonMesh *mesh, int vertexCount, const dFloat* vertex, int strideInBytes, int materialIndex);
-	NEWTON_API void NewtonMeshEndFace(const NewtonMesh *mesh);
 
-	NEWTON_API int NewtonMeshGetVertexCount (const NewtonMesh *mesh); 
-	NEWTON_API void NewtonMeshGetVertexStreams (const NewtonMesh *mesh, 
+	NEWTON_API void NewtonRemoveUnusedVertices(const NewtonMesh* mesh, int* vertexRemapTable);
+
+	NEWTON_API void NewtonMeshBeginFace(const NewtonMesh* const mesh);
+	NEWTON_API void NewtonMeshAddFace(const NewtonMesh* const mesh, int vertexCount, const dFloat* vertex, int strideInBytes, int materialIndex);
+	NEWTON_API void NewtonMeshEndFace(const NewtonMesh* const mesh);
+
+	NEWTON_API void NewtonMeshBuildFromVertexListIndexList(const NewtonMesh* const mesh,
+		int faceCount, const int* const faceIndexCount, const int* const faceMaterialIndex, 
+		const dFloat* const vertex, int vertexStrideInBytes, const int* const vertexIndex,
+		const dFloat* const normal, int normalStrideInBytes, const int* const normalIndex,
+		const dFloat* const uv0, int uv0StrideInBytes, const int* const uv0Index,
+		const dFloat* const uv1, int uv1StrideInBytes, const int* const uv1Index);
+
+
+
+	NEWTON_API void NewtonMeshGetVertexStreams (const NewtonMesh* const mesh, 
 												int vertexStrideInByte, dFloat* vertex,
 												int normalStrideInByte, dFloat* normal,
 												int uvStrideInByte0, dFloat* uv0,
 												int uvStrideInByte1, dFloat* uv1);
-	NEWTON_API void NewtonMeshGetIndirectVertexStreams(const NewtonMesh *mesh, 
+	NEWTON_API void NewtonMeshGetIndirectVertexStreams(const NewtonMesh* const mesh, 
 													   int vertexStrideInByte, dFloat* vertex, int* vertexIndices, int* vertexCount,
 													   int normalStrideInByte, dFloat* normal, int* normalIndices, int* normalCount,
 													   int uvStrideInByte0, dFloat* uv0, int* uvIndices0, int* uvCount0,
 													   int uvStrideInByte1, dFloat* uv1, int* uvIndices1, int* uvCount1);
-	NEWTON_API void* NewtonMeshBeginHandle (const NewtonMesh *mesh); 
-	NEWTON_API void NewtonMeshEndHandle (const NewtonMesh *mesh, void* Handle); 
-	NEWTON_API int NewtonMeshFirstMaterial (const NewtonMesh *mesh, void* Handle); 
-	NEWTON_API int NewtonMeshNextMaterial (const NewtonMesh *mesh, void* Handle, int materialId); 
-	NEWTON_API int NewtonMeshMaterialGetMaterial (const NewtonMesh *mesh, void* Handle, int materialId); 
-	NEWTON_API int NewtonMeshMaterialGetIndexCount (const NewtonMesh *mesh, void* Handle, int materialId); 
-	NEWTON_API void NewtonMeshMaterialGetIndexStream (const NewtonMesh *mesh, void* Handle, int materialId, int* index); 
-	NEWTON_API void NewtonMeshMaterialGetIndexStreamShort (const NewtonMesh *mesh, void* Handle, int materialId, short int* index); 
+	NEWTON_API void* NewtonMeshBeginHandle (const NewtonMesh* const mesh); 
+	NEWTON_API void NewtonMeshEndHandle (const NewtonMesh* const mesh, void* const handle); 
+	NEWTON_API int NewtonMeshFirstMaterial (const NewtonMesh* const mesh, void* const handle); 
+	NEWTON_API int NewtonMeshNextMaterial (const NewtonMesh* const mesh, void* const handle, int materialId); 
+	NEWTON_API int NewtonMeshMaterialGetMaterial (const NewtonMesh* const mesh, void* const handle, int materialId); 
+	NEWTON_API int NewtonMeshMaterialGetIndexCount (const NewtonMesh* const mesh, void* const handle, int materialId); 
+	NEWTON_API void NewtonMeshMaterialGetIndexStream (const NewtonMesh* const mesh, void* const handle, int materialId, int* index); 
+	NEWTON_API void NewtonMeshMaterialGetIndexStreamShort (const NewtonMesh* const mesh, void* const handle, int materialId, short int* index); 
 
-	NEWTON_API NewtonMesh* NewtonMeshCreateFirstSingleSegment (const NewtonMesh *mesh); 
-	NEWTON_API NewtonMesh* NewtonMeshCreateNextSingleSegment (const NewtonMesh *mesh, const NewtonMesh *segment); 
+	NEWTON_API NewtonMesh* NewtonMeshCreateFirstSingleSegment (const NewtonMesh* const mesh); 
+	NEWTON_API NewtonMesh* NewtonMeshCreateNextSingleSegment (const NewtonMesh* const mesh, const NewtonMesh *segment); 
 
-	NEWTON_API int NewtonMeshGetTotalFaceCount (const NewtonMesh *mesh); 
-	NEWTON_API int NewtonMeshGetTotalIndexCount (const NewtonMesh *mesh); 
-	NEWTON_API void NewtonMeshGetFaces (const NewtonMesh *mesh, int* const faceIndexCount, int* const faceMaterial, int* const faceIndices); 
+	NEWTON_API int NewtonMeshGetTotalFaceCount (const NewtonMesh* const mesh); 
+	NEWTON_API int NewtonMeshGetTotalIndexCount (const NewtonMesh* const mesh); 
+	NEWTON_API void NewtonMeshGetFaces (const NewtonMesh* const mesh, int* const faceIndexCount, int* const faceMaterial, void** const faceIndices); 
 
+
+	NEWTON_API int NewtonMeshGetPointCount (const NewtonMesh* const mesh); 
+	NEWTON_API int NewtonMeshGetPointStrideInByte (const NewtonMesh* const mesh); 
+	NEWTON_API dFloat* NewtonMeshGetPointArray (const NewtonMesh* const mesh); 
+	NEWTON_API dFloat* NewtonMeshGetNormalArray (const NewtonMesh* const mesh); 
+	NEWTON_API dFloat* NewtonMeshGetUV0Array (const NewtonMesh* const mesh); 
+	NEWTON_API dFloat* NewtonMeshGetUV1Array (const NewtonMesh* const mesh); 
+
+	NEWTON_API int NewtonMeshGetVertexCount (const NewtonMesh* const mesh); 
+	NEWTON_API int NewtonMeshGetVertexStrideInByte (const NewtonMesh* const mesh); 
+	NEWTON_API dFloat* NewtonMeshGetVertexArray (const NewtonMesh* const mesh); 
+
+
+	NEWTON_API void* NewtonMeshGetFirstVertex (const NewtonMesh* const mesh);
+	NEWTON_API void* NewtonMeshGetNextVertex (const NewtonMesh* const mesh, const void* vertex);
+	NEWTON_API int NewtonMeshGetVertexIndex (const NewtonMesh* const mesh, const void* vertex);
+
+	NEWTON_API void* NewtonMeshGetFirstPoint (const NewtonMesh* const mesh);
+	NEWTON_API void* NewtonMeshGetNextPoint (const NewtonMesh* const mesh, const void* point);
+	NEWTON_API int NewtonMeshGetPointIndex (const NewtonMesh* const mesh, const void* point);
+	NEWTON_API int NewtonMeshGetVertexIndexFromPoint (const NewtonMesh* const mesh, const void* point);
+	
+
+	NEWTON_API void* NewtonMeshGetFirstEdge (const NewtonMesh* const mesh);
+	NEWTON_API void* NewtonMeshGetNextEdge (const NewtonMesh* const mesh, const void* edge);
+	NEWTON_API void NewtonMeshGetEdgeIndices (const NewtonMesh* const mesh, const void* edge, int* v0, int* v1);
+	//NEWTON_API void NewtonMeshGetEdgePointIndices (const NewtonMesh* const mesh, const void* edge, int* v0, int* v1);
+
+	NEWTON_API void* NewtonMeshGetFirstFace (const NewtonMesh* const mesh);
+	NEWTON_API void* NewtonMeshGetNextFace (const NewtonMesh* const mesh, const void* face);
+	NEWTON_API int NewtonMeshIsFaceOpen (const NewtonMesh* const mesh, const void* face);
+	NEWTON_API int NewtonMeshGetFaceMaterial (const NewtonMesh* const mesh, const void* face);
+	NEWTON_API int NewtonMeshGetFaceIndexCount (const NewtonMesh* const mesh, const void* face);
+	NEWTON_API void NewtonMeshGetFaceIndices (const NewtonMesh* const mesh, const void* face, int* indices);
+	NEWTON_API void NewtonMeshGetFacePointIndices (const NewtonMesh* const mesh, const void* face, int* indices);
+	
 
 
 	// **********************************************************************************************

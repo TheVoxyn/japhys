@@ -18,7 +18,7 @@ int bg_physicsDefaultGroupId;
 
 static float lastUpdateTime = 0.0f;
 
-const float METRES_PER_UNIT = 48.0f;
+const float METRES_PER_UNIT = 32.0f;
 const float UNITS_PER_METRE = 1.0f / METRES_PER_UNIT;
 
 typedef std::map<int, NewtonBody*> LevelEntitiesMap;
@@ -113,7 +113,7 @@ static void LoadMapSurfaces ( byte* base, dsurface_t* surfaces, drawVert_t* vert
             
             case MST_PATCH:
             {
-                int rowLimit = surfaces[i].patchHeight - 1;
+                /*int rowLimit = surfaces[i].patchHeight - 1;
                 int colLimit = surfaces[i].patchWidth - 1;
                 
                 for ( int j = 0; j < rowLimit; ++j )
@@ -143,7 +143,7 @@ static void LoadMapSurfaces ( byte* base, dsurface_t* surfaces, drawVert_t* vert
                 }
                 
                 vertexCount += surfaces[i].numVerts;
-                ++surfaceCount;
+                ++surfaceCount;*/
             }
             break;
             
@@ -170,11 +170,9 @@ static void LoadMapSurfaces ( byte* base, dsurface_t* surfaces, drawVert_t* vert
     
     Com_Printf ("...%d static map surfaces loaded, %d vertices total\n", surfaceCount, vertexCount);
     
-    NewtonBody* worldBody = NewtonCreateBody (bg_physicsWorld, collision);
-    NewtonReleaseCollision (bg_physicsWorld, collision);
-    
     dMatrix worldMatrix (GetIdentityMatrix());
-    NewtonBodySetMatrix (worldBody, &worldMatrix[0][0]);
+    NewtonBody* worldBody = NewtonCreateBody (bg_physicsWorld, collision, &worldMatrix[0][0]);
+    NewtonReleaseCollision (bg_physicsWorld, collision);
     
     vec3_t worldMin, worldMax;
     
@@ -264,12 +262,19 @@ static qboolean LoadMapData ( const char* mapname, char** mapBuffer )
     int fileLen = 0;
     fileHandle_t f = 0;
 
-    Q_strncpyz (filename, "maps/", sizeof (filename));
-    Q_strcat (filename, sizeof (filename), mapname);
-    Q_strcat (filename, sizeof (filename), ".bsp");
+    if ( !strstr (mapname, "maps/") && !strstr (mapname, ".bsp") )
+    {
+        Q_strncpyz (filename, "maps/", sizeof (filename));
+        Q_strcat (filename, sizeof (filename), mapname);
+        Q_strcat (filename, sizeof (filename), ".bsp");
+    }
+    else
+    {
+        Q_strncpyz (filename, mapname, sizeof (filename));
+    }
     
     fileLen = strap_FS_FOpenFile (filename, &f, FS_READ);
-    if ( fileLen == 0 || f == 0 )
+    if ( fileLen == -1 || !f )
     {
         strap_FS_FCloseFile (f);
         
@@ -426,7 +431,7 @@ void BG_LoadBrushModelForEntity ( int entityId, int modelId )
             
             case MST_PATCH:
             {
-                int rowLimit = mapSurfaces[i].patchHeight - 1;
+                /*int rowLimit = mapSurfaces[i].patchHeight - 1;
                 int colLimit = mapSurfaces[i].patchWidth - 1;
                 
                 for ( int j = 0; j < rowLimit; ++j )
@@ -453,7 +458,7 @@ void BG_LoadBrushModelForEntity ( int entityId, int modelId )
                         
                         NewtonMeshAddFace (mesh, 3, &v[0][0], sizeof (vec3_t), bg_physicsDefaultGroupId);
                     }
-                }
+                }*/
             }
             break;
             
@@ -468,7 +473,8 @@ void BG_LoadBrushModelForEntity ( int entityId, int modelId )
     NewtonMeshEndFace (mesh);
     
     NewtonCollision* collision = NewtonCreateConvexHullFromMesh (bg_physicsWorld, mesh, 0.02f, entityId);
-    NewtonBody* body = NewtonCreateBody (bg_physicsWorld, collision);
+    dMatrix matrix (GetIdentityMatrix());
+    NewtonBody* body = NewtonCreateBody (bg_physicsWorld, collision, &matrix[0][0]);
     
     NewtonReleaseCollision (bg_physicsWorld, collision);
     NewtonBodySetMaterialGroupID (body, bg_physicsDefaultGroupId);

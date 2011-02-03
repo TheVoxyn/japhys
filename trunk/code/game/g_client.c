@@ -2573,7 +2573,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	}
 
     //[Physics]
-	G_RemoveStaticEntity (ent);
+	
 	//[/Physics]
 
 	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
@@ -2586,7 +2586,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 		}
 		
 		//[Physics]
-        G_AddStaticEntity (ent, ET_PLAYER);
+        
         //[/Physics]
 	}
 	G_LogPrintf( "ClientBegin: %i\n", clientNum );
@@ -3833,7 +3833,7 @@ void ClientDisconnect( int clientNum ) {
 	}
 	
 	//[Physics]
-	G_RemoveStaticEntity (ent);
+	
 	//[/Physics]
 
 	i = 0;

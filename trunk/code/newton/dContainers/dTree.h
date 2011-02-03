@@ -13,7 +13,7 @@
 #ifndef __dTree__
 #define __dTree__
 
-#include <dContainersStdAfx.h>
+#include "dContainersStdAfx.h"
 #include <stdlib.h>
 
 
@@ -30,53 +30,53 @@ class dRedBackNode
 	};
 
 	public:
-	dRedBackNode *GetLeft() const;
-	dRedBackNode *GetRight() const;
-	dRedBackNode *GetParent() const;
-	dRedBackNode (dRedBackNode *parent);
-	dRedBackNode *Prev() const;
-	dRedBackNode *Next() const;
-	dRedBackNode *Minimum() const;
-	dRedBackNode *Maximum() const;
-
+	dRedBackNode* GetLeft() const;
+	dRedBackNode* GetRight() const;
+	dRedBackNode* GetParent() const;
+	dRedBackNode (dRedBackNode* parent);
+	dRedBackNode* Prev() const;
+	dRedBackNode* Next() const;
+	dRedBackNode* Minimum() const;
+	dRedBackNode* Maximum() const;
+/*
 	void *operator new (size_t size) 
 	{
-		//return m_allocator->malloc(size_t);
-		return malloc (size) ;
+		//return malloc (size) ;
+		return new char[size];
 	}
 
 	void operator delete (void *ptr) 
 	{
-		#ifdef	_DEBUG
-		//memset (ptr, 0xcc, m_size);
-		#endif
-		free (ptr);
+		//free (ptr);
+		delete[] (char*)ptr;
 	}
-
+*/
 
 	protected:
-	~dRedBackNode () 
+	virtual ~dRedBackNode () 
 	{
 	}
 
-	void Initdata (dRedBackNode *parent);
+	void Initdata (dRedBackNode* const parent);
 	void SetColor (bool color);
 	bool GetColor () const;
 	bool IsInTree () const;
 	void SetInTreeFlag (bool flag);
-	void RemoveAllLow ();
-	void RotateLeft(dRedBackNode **head); 
-	void RotateRight(dRedBackNode **head); 
-	void RemoveFixup (dRedBackNode *node, dRedBackNode **head); 
+	void RotateLeft(dRedBackNode** const head); 
+	void RotateRight(dRedBackNode** const head); 
+	void RemoveFixup (dRedBackNode* const node, dRedBackNode** const head); 
 	void RemoveAll ();
-	void Remove (dRedBackNode **head);
-	void InsertFixup(dRedBackNode **head); 
+	void Unlink (dRedBackNode** const head);
+	void RemoveAllLow ();
+	void Remove (dRedBackNode** const head);
+	void InsertFixup(dRedBackNode** const head); 
+	
 
 	bool m_color;
 	bool m_inTree;
-	dRedBackNode *m_left;
-	dRedBackNode *m_right;
-	dRedBackNode *m_parent;
+	dRedBackNode* m_left;
+	dRedBackNode* m_right;
+	dRedBackNode* m_parent;
 
 };
 
@@ -86,67 +86,65 @@ class dTree
 	public:
 	class dTreeNode: public dRedBackNode
 	{
-		~dTreeNode () 
-		{
-		}
-
 		dTreeNode (
 			const KEY &key, 
-			dTreeNode *parentNode)
+			dTreeNode* parentNode)
 			:dRedBackNode(parentNode), m_info (), m_key (key)
 		{
 		}
-
 	
 		dTreeNode (
 			const OBJECT &info, 
 			const KEY &key, 
-			dTreeNode *parentNode)
+			dTreeNode* parentNode)
 			:dRedBackNode(parentNode), m_info (info), m_key (key)
 		{
 		}
+
+		virtual ~dTreeNode () 
+		{
+		}
+
 /*
 		void *operator new (size_t size) 
 		{
-			//return m_allocator->malloc(size_t);
-			return malloc (size) ;
+			//return malloc(size);
+			return new char[size];
 		}
 
 		void operator delete (void *ptr) 
 		{
-			#ifdef	_DEBUG
-			//memset (ptr, 0xcc, m_size);
-			#endif
-			//m_allocator->free(ptr);
-			free (ptr);
+			//free(ptr);
+			delete[] (char*)ptr;
 		}
 */
-		dTreeNode *GetLeft () const
+
+		dTreeNode* GetLeft () const
 		{
-			return (dTreeNode *)dRedBackNode::m_left;
+			return (dTreeNode* )dRedBackNode::m_left;
 		}
 
-		dTreeNode *GetRight () const
+		dTreeNode* GetRight () const
 		{
-			return (dTreeNode *)dRedBackNode::m_right;
+			return (dTreeNode* )dRedBackNode::m_right;
 		}
 
-		dTreeNode *GetParent ()
+		dTreeNode* GetParent ()
 		{
-			return (dTreeNode *)dRedBackNode::m_parent;
+			return (dTreeNode* )dRedBackNode::m_parent;
 		}
 
-		void SetLeft (dTreeNode *node)
+		void SetLeft (dTreeNode* node)
 		{
 			dRedBackNode::m_left = node;
 		}
 
-		void SetRight (dTreeNode *node)
+		void SetRight (dTreeNode* node)
 		{
 			dRedBackNode::m_right = node;
 		}
 
-		void SetParent (dTreeNode *node)
+		void SetParent (dTreeNode* node)
 		{
 			dRedBackNode::m_parent = node;
 		}
@@ -170,8 +168,8 @@ class dTree
 
 	class Iterator
 	{
-		dRedBackNode *m_ptr;
-		const dTree *m_tree;
+		dRedBackNode* m_ptr;
+		const dTree* m_tree;
 
 		public:
 		Iterator(const dTree<OBJECT,KEY> &me)
@@ -194,7 +192,7 @@ class dTree
 			m_ptr = m_tree->Maximum();
 		}
 
-		void Set (dTreeNode *node)
+		void Set (dTreeNode* node)
 		{
 			m_ptr = node;
 		}
@@ -233,7 +231,7 @@ class dTree
 			return ((dTreeNode*)m_ptr)->GetInfo();
 		}
 
-		dTreeNode *GetNode() const
+		dTreeNode* GetNode() const
 		{
 			return (dTreeNode*)m_ptr;
 		}
@@ -249,40 +247,42 @@ class dTree
 
 
 	// ***********************************************************
-	// member funstions
+	// member functions
 	// ***********************************************************
 	public:
 	dTree ();
-	~dTree (); 
+	virtual ~dTree (); 
 
-	void* operator new (size_t size);
-	void operator delete (void *ptr);
+//	void* operator new (size_t size);
+//	void operator delete (void *ptr);
 
 	operator int() const;
 	int GetCount() const;
 
-	dTreeNode *GetRoot () const;
-	dTreeNode *Minimum () const;
-	dTreeNode *Maximum () const;
+	dTreeNode* GetRoot () const;
+	dTreeNode* Minimum () const;
+	dTreeNode* Maximum () const;
 
-	dTreeNode *Find (KEY key) const;
-	dTreeNode *FindGreater (KEY key) const;
-	dTreeNode *FindGreaterEqual (KEY key) const;
-	dTreeNode *FindLessEqual (KEY key) const;
+	dTreeNode* Find (KEY key) const;
+	dTreeNode* FindGreater (KEY key) const;
+	dTreeNode* FindGreaterEqual (KEY key) const;
+	dTreeNode* FindLessEqual (KEY key) const;
 
-	dTreeNode *GetNodeFromInfo (OBJECT &info) const;
+	dTreeNode* GetNodeFromInfo (OBJECT &info) const;
 
-	dTreeNode *Insert (KEY key);
-	dTreeNode *Insert (const OBJECT &element, KEY key);
-	dTreeNode *Insert (const OBJECT &element, KEY key, bool& elementWasInTree);
-	dTreeNode *Insert (dTreeNode *node, KEY key);
+	dTreeNode* Insert (KEY key);
+	dTreeNode* Insert (const OBJECT &element, KEY key);
+	dTreeNode* Insert (const OBJECT &element, KEY key, bool& elementWasInTree);
+	dTreeNode* Insert (dTreeNode* node, KEY key);
 
-	dTreeNode *Replace (OBJECT &element, KEY key);
-	dTreeNode *ReplaceKey (KEY oldKey, KEY newKey);
-	dTreeNode *ReplaceKey (dTreeNode *node, KEY key);
+	dTreeNode* Replace (OBJECT &element, KEY key);
+	dTreeNode* ReplaceKey (KEY oldKey, KEY newKey);
+	dTreeNode* ReplaceKey (dTreeNode* node, KEY key);
+
+	void Unlink (dTreeNode* node);
 
 	void Remove (KEY key);
-	void Remove (dTreeNode *node);
+	void Remove (dTreeNode* node);
 	void RemoveAll (); 
 
 	bool SanityCheck () const;
@@ -293,22 +293,22 @@ class dTree
 	// ***********************************************************
 	private:
 	int m_count;
-	dTreeNode *m_head;
+	dTreeNode* m_head;
 //	static int m_size;
 
 	int CompareKeys (const KEY &key0, const KEY &key1) const;
-	bool SanityCheck (dTreeNode *ptr, int height) const;
+	bool SanityCheck (dTreeNode* ptr, int height) const;
 
 	friend class dTreeNode;
 };
 
 
-inline dRedBackNode::dRedBackNode (dRedBackNode *parent)
+inline dRedBackNode::dRedBackNode (dRedBackNode* const parent)
 {
 	Initdata (parent);
 }
 
-inline void dRedBackNode::Initdata (dRedBackNode *parent)
+inline void dRedBackNode::Initdata (dRedBackNode* const parent)
 {
 	SetColor (RED);
 	SetInTreeFlag (true);
@@ -351,19 +351,21 @@ dTree<OBJECT, KEY>::~dTree ()
 	RemoveAll();
 }
 
-
+/*
 template<class OBJECT, class KEY>
 void* dTree<OBJECT, KEY>::operator new (size_t size)
 {
-	return malloc (size);
+//	return malloc (size);
+	return new char[size];
 }
 
 template<class OBJECT, class KEY>
 void dTree<OBJECT, KEY>::operator delete (void *ptr)
 {
-	free (ptr);
+//	free (ptr);
+	delete[] (char*)ptr;
 }
-
+*/
 
 template<class OBJECT, class KEY>
 dTree<OBJECT, KEY>::operator int() const
@@ -378,28 +380,28 @@ int dTree<OBJECT, KEY>::GetCount() const
 }
 
 template<class OBJECT, class KEY>
-typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::Minimum () const
+typename dTree<OBJECT, KEY>::dTreeNode* dTree<OBJECT, KEY>::Minimum () const
 {
-	return m_head ? (dTreeNode *)m_head->Minimum() : NULL;
+	return m_head ? (dTreeNode* )m_head->Minimum() : NULL;
 }
 
 template<class OBJECT, class KEY>
-typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::Maximum () const
+typename dTree<OBJECT, KEY>::dTreeNode* dTree<OBJECT, KEY>::Maximum () const
 {
-	return m_head ? (dTreeNode *)m_head->Maximum() : NULL;
+	return m_head ? (dTreeNode* )m_head->Maximum() : NULL;
 }
 
 template<class OBJECT, class KEY>
-typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::GetRoot () const
+typename dTree<OBJECT, KEY>::dTreeNode* dTree<OBJECT, KEY>::GetRoot () const
 {
 	return m_head;
 }
 
 template<class OBJECT, class KEY>
-typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::Find (KEY key) const
+typename dTree<OBJECT, KEY>::dTreeNode* dTree<OBJECT, KEY>::Find (KEY key) const
 {
 	int val;
-	dTreeNode *ptr;
+	dTreeNode* ptr;
 
 	if (m_head == NULL) {
 		return NULL;
@@ -421,14 +423,14 @@ typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::Find (KEY key) const
 }
 
 template<class OBJECT, class KEY>
-typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::GetNodeFromInfo (OBJECT &info) const
+typename dTree<OBJECT, KEY>::dTreeNode* dTree<OBJECT, KEY>::GetNodeFromInfo (OBJECT &info) const
 {
 	int offset;
-	dTreeNode *node;
+	dTreeNode* node;
 
-	node = (dTreeNode *) &info;
+	node = (dTreeNode* ) &info;
 	offset = ((char*) &node->m_info) - ((char *) node);
-	node = (dTreeNode *) (((char *) node) - offset);
+	node = (dTreeNode* ) (((char *) node) - offset);
 
 //	_ASSERTE (node->IsInTree ());
 	_ASSERTE (&node->GetInfo () == &info);
@@ -436,23 +438,19 @@ typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::GetNodeFromInfo (OBJ
 }
 
 template<class OBJECT, class KEY>
-typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::FindGreater (KEY key) const
+typename dTree<OBJECT, KEY>::dTreeNode* dTree<OBJECT, KEY>::FindGreater (KEY key) const
 {
-	int val;
-	dTreeNode *ptr;
-	dTreeNode *prev;
-
 	if (m_head == NULL) {
 		return NULL;
 	}
 
-	prev = NULL;
-	ptr = m_head;
-	val = 0;
+	dTreeNode* prev = NULL;
+	dTreeNode* ptr = m_head;
+	int val = 0;
 	while (ptr != NULL) {
 		val = CompareKeys (ptr->m_key, key);
 		if (!val) {
-			return (dTreeNode *)ptr->Next();
+			return (dTreeNode* )ptr->Next();
 		}
 		prev = ptr;
 		if (val < 0) {
@@ -468,23 +466,19 @@ typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::FindGreater (KEY key
 		}
 		prev = prev->GetParent(); 
 	}
-	return (dTreeNode *)prev; 
+	return (dTreeNode* )prev; 
 }
 
 template<class OBJECT, class KEY>
-typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::FindGreaterEqual (KEY key) const
+typename dTree<OBJECT, KEY>::dTreeNode* dTree<OBJECT, KEY>::FindGreaterEqual (KEY key) const
 {
-	int val;
-	dTreeNode *ptr;
-	dTreeNode *prev;
-
 	if (m_head == NULL) {
 		return NULL;
 	}
 
-	prev = NULL;
-	ptr = m_head;
-	val = 0;
+	dTreeNode* prev = NULL;
+	dTreeNode* ptr = m_head;
+	int val = 0;
 	while (ptr != NULL) {
 		val = CompareKeys (ptr->m_key, key);
 		if (!val) {
@@ -504,23 +498,19 @@ typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::FindGreaterEqual (KE
 		}
 		prev = prev->GetParent(); 
 	}
-	return (dTreeNode *)prev; 
+	return (dTreeNode* )prev; 
 }
 
 template<class OBJECT, class KEY>
-typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::FindLessEqual (KEY key) const
+typename dTree<OBJECT, KEY>::dTreeNode* dTree<OBJECT, KEY>::FindLessEqual (KEY key) const
 {
-	int val;
-	dTreeNode *ptr;
-	dTreeNode *prev;
-
 	if (m_head == NULL) {
 		return NULL;
 	}
 
-	prev = NULL;
-	ptr = m_head;
-	val = 0;
+	dTreeNode* prev = NULL;
+	dTreeNode* ptr = m_head;
+	int val = 0;
 	while (ptr != NULL) {
 		val = CompareKeys (ptr->m_key, key);
 		if (!val) {
@@ -540,20 +530,16 @@ typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::FindLessEqual (KEY k
 		}
 		prev = prev->GetParent(); 
 	}
-	return (dTreeNode *)prev; 
+	return (dTreeNode* )prev; 
 }
 
 
 template<class OBJECT, class KEY>
-typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::Insert (KEY key)
+typename dTree<OBJECT, KEY>::dTreeNode* dTree<OBJECT, KEY>::Insert (KEY key)
 {
-	int val;
-	dTreeNode *ptr;
-	dTreeNode *parent;
-
-	parent = NULL;
-	ptr = m_head;
-	val = 0;
+	dTreeNode* parent = NULL;
+	dTreeNode* ptr = m_head;
+	int val = 0;
 	while (ptr != NULL) {
 		parent = ptr;
 		val = CompareKeys (ptr->m_key, key);
@@ -585,15 +571,11 @@ typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::Insert (KEY key)
 
 
 template<class OBJECT, class KEY>
-typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::Insert (const OBJECT &element, KEY key, bool& elementWasInTree)
+typename dTree<OBJECT, KEY>::dTreeNode* dTree<OBJECT, KEY>::Insert (const OBJECT &element, KEY key, bool& elementWasInTree)
 {
-	int val;
-	dTreeNode *ptr;
-	dTreeNode *parent;
-
-	parent = NULL;
-	ptr = m_head;
-	val = 0;
+	dTreeNode* parent = NULL;
+	dTreeNode* ptr = m_head;
+	int val = 0;
 	elementWasInTree = false;
 	while (ptr != NULL) {
 		parent = ptr;
@@ -625,12 +607,10 @@ typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::Insert (const OBJECT
 }
 
 template<class OBJECT, class KEY>
-typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::Insert (const OBJECT &element, KEY key)
+typename dTree<OBJECT, KEY>::dTreeNode* dTree<OBJECT, KEY>::Insert (const OBJECT &element, KEY key)
 {
 	bool foundState;
-	dTreeNode *node;
-
-	node = Insert (element, key, foundState);
+	dTreeNode* node = Insert (element, key, foundState);
 	if (foundState) {
 		node = NULL;
 	}
@@ -638,15 +618,11 @@ typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::Insert (const OBJECT
 }
 
 template<class OBJECT, class KEY>
-typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::Insert (typename dTree<OBJECT, KEY>::dTreeNode *node, KEY key)
+typename dTree<OBJECT, KEY>::dTreeNode* dTree<OBJECT, KEY>::Insert (typename dTree<OBJECT, KEY>::dTreeNode* node, KEY key)
 {
-	int val;
-	dTreeNode *ptr;
-	dTreeNode *parent;
-
-	val = 0;
-	ptr = m_head;
-	parent = NULL;
+	int val = 0;
+	dTreeNode* ptr = m_head;
+	dTreeNode* parent = NULL;
 	while (ptr != NULL) {
 		parent = ptr;
 		val = CompareKeys (ptr->m_key, key);
@@ -680,15 +656,11 @@ typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::Insert (typename dTr
 }
 
 template<class OBJECT, class KEY>
-typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::Replace (OBJECT &element, KEY key)
+typename dTree<OBJECT, KEY>::dTreeNode* dTree<OBJECT, KEY>::Replace (OBJECT &element, KEY key)
 {
-	int val;
-	dTreeNode *ptr;
-	dTreeNode *parent;
-
-	parent = NULL;
-	ptr = m_head;
-	val = 0;
+	dTreeNode* parent = NULL;
+	dTreeNode* ptr = m_head;
+	int val = 0;
 	while (ptr != NULL) {
 		parent = ptr;
 		val = CompareKeys (ptr->m_key, key);
@@ -718,42 +690,45 @@ typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::Replace (OBJECT &ele
 }
 
 template<class OBJECT, class KEY>
-typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::ReplaceKey (typename dTree<OBJECT, KEY>::dTreeNode *node, KEY key)
+typename dTree<OBJECT, KEY>::dTreeNode* dTree<OBJECT, KEY>::ReplaceKey (typename dTree<OBJECT, KEY>::dTreeNode* node, KEY key)
 {
-	dTreeNode *ptr;
-
-	_ASSERTE (node->IsAlive());
-	Remove (node);
-	node->Unkill();
-	ptr = Insert (node, key);
+//	_ASSERTE (node->IsAlive());
+//	Remove (node);
+//	node->Unkill();
+	Unlink(node);
+	dTreeNode* const ptr = Insert (node, key);
 
 	_ASSERTE (ptr);
 	return ptr;
 }
 
 template<class OBJECT, class KEY>
-typename dTree<OBJECT, KEY>::dTreeNode *dTree<OBJECT, KEY>::ReplaceKey (KEY oldKey, KEY newKey)
+typename dTree<OBJECT, KEY>::dTreeNode* dTree<OBJECT, KEY>::ReplaceKey (KEY oldKey, KEY newKey)
 {
-	dTreeNode *node;
-
-	node = Find (oldKey);
+	dTreeNode* const node = Find (oldKey);
 	return node ? ReplaceKey (node, newKey) : NULL;
 }
 
 template<class OBJECT, class KEY>
-void dTree<OBJECT, KEY>::Remove (typename dTree<OBJECT, KEY>::dTreeNode *node)
+void dTree<OBJECT, KEY>::Unlink (typename dTree<OBJECT, KEY>::dTreeNode* node)
 {
 	m_count	--;
-	node->Remove ((dRedBackNode **)&m_head);
+	node->Unlink((dRedBackNode** )&m_head);
+}
+
+
+template<class OBJECT, class KEY>
+void dTree<OBJECT, KEY>::Remove (typename dTree<OBJECT, KEY>::dTreeNode* node)
+{
+	m_count	--;
+	node->Remove ((dRedBackNode** )&m_head);
 }
 
 template<class OBJECT, class KEY>
 void dTree<OBJECT, KEY>::Remove (KEY key) 
 {
-	dTreeNode *node;
-
 	// find node in tree 
-	node = Find (key);
+	dTreeNode* const node = Find (key);
 	if (node == NULL) {
 		return;
 	}
@@ -778,11 +753,8 @@ bool dTree<OBJECT, KEY>::SanityCheck () const
 
 
 template<class OBJECT, class KEY>
-bool dTree<OBJECT, KEY>::SanityCheck (typename dTree<OBJECT, KEY>::dTreeNode *ptr, int height) const
+bool dTree<OBJECT, KEY>::SanityCheck (typename dTree<OBJECT, KEY>::dTreeNode* ptr, int height) const
 {
-	int bh;
-	dTreeNode *x;
-
 	if (!ptr) {
 		return true;
 	}
@@ -802,13 +774,13 @@ bool dTree<OBJECT, KEY>::SanityCheck (typename dTree<OBJECT, KEY>::dTreeNode *pt
 	if (ptr->GetColor() == dTreeNode::BLACK) {
 		height ++;
 	} else if (!((!ptr->m_left  || (ptr->m_left->GetColor() == dTreeNode::BLACK)) &&
-			       (!ptr->m_right || (ptr->m_right->GetColor() == dTreeNode::BLACK)))) {
+		       (!ptr->m_right || (ptr->m_right->GetColor() == dTreeNode::BLACK)))) {
 	  	return false;
 	}
 
 	if (!ptr->m_left && !ptr->m_right) {
-		bh = 0;
-		for (x = ptr; x; x = x->GetParent()) {
+		int bh = 0;
+		for (dTreeNode* x = ptr; x; x = x->GetParent()) {
 	 		if (x->GetColor() == dTreeNode::BLACK) {
 				bh ++;
 			}

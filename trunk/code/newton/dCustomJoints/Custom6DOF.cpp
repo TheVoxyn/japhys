@@ -34,12 +34,12 @@ enum d6DOF_AngularGeometry
 };
 
 
-Custom6DOF::Custom6DOF (const dMatrix& pinsAndPivoChildFrame, const dMatrix& pinsAndPivoParentFrame, const NewtonBody* child, const NewtonBody* parent)
+Custom6DOF::Custom6DOF (const dMatrix& pinsAndPivotChildFrame, const dMatrix& pinsAndPivotParentFrame, const NewtonBody* child, const NewtonBody* parent)
 	:NewtonCustomJoint(6, child, parent),
 	 m_minLinearLimits(0.0f, 0.0f, 0.0f, 0.0f), m_maxLinearLimits(0.0f, 0.0f, 0.0f, 0.0f),
 	 m_minAngularLimits(0.0f, 0.0f, 0.0f, 0.0f), m_maxAngularLimits(0.0f, 0.0f, 0.0f, 0.0f)
 {
-	CalculateLocalMatrix (pinsAndPivoChildFrame, m_localMatrix0, m_localMatrix1);
+	CalculateLocalMatrix (pinsAndPivotChildFrame, m_localMatrix0, m_localMatrix1);
 
 	m_reverseUniversal = false;
 	// set default max constraint violations correction

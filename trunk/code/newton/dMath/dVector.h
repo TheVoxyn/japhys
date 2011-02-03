@@ -61,6 +61,35 @@ class dVector: public TemplateVector<dFloat>
 };
 
 
+class dBigVector: public TemplateVector<double>
+{
+	public: 
+	dBigVector(){};
+	dBigVector (const TemplateVector<dFloat>& v)
+	{
+		m_x = v.m_x;
+		m_y = v.m_y;
+		m_z = v.m_z;
+		m_w = v.m_w; 		
+	}
+	dBigVector (const TemplateVector<double>& v)
+	{
+		m_x = v.m_x;
+		m_y = v.m_y;
+		m_z = v.m_z;
+		m_w = v.m_w; 		
+	}
+
+	//	dBigVector (const dFloat *ptr);
+	dBigVector (dFloat x, dFloat y, dFloat z, dFloat w = 1.0)
+	{
+		m_x = x;
+		m_y = y;
+		m_z = z;
+		m_w = w; 		
+	}
+};
+
 
 
 
