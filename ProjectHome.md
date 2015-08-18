@@ -1,0 +1,1 @@
+JAPhys is a mod for Star Wars: Jedi Knight: Jedi Academy which includes a full physics engine. Using Newton Game Dynamics, objects can be affected by Force powers, weapons and other players.
